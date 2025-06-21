@@ -4,10 +4,19 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
-    <stylesheet> </stylesheet>
+    <style>
+      /* CSS in counter-no-shadow affects everything in the page. */
+      /* CSS in counter-shadow-open and counter-shadow-closed does not. */
+      button {
+        background-color: blue;
+        color: black;
+      }
+    </style>
+
     <script src="counter-no-shadow.js"></script>
     <script src="counter-shadow-open.js"></script>
     <script src="counter-shadow-closed.js"></script>
+
     <script>
       window.onload = () => {
         console.log("index.html: onload entered");
@@ -18,7 +27,7 @@
         const cso = document.querySelector("counter-shadow-open");
         cso.setAttribute("count", 5);
 
-        //TODO: Does this work?
+        // This works even though the shadow DOM is in closed mode.
         const csc = document.querySelector("counter-shadow-closed");
         csc.setAttribute("count", 5);
       };
@@ -42,6 +51,7 @@
     <h1>Counters</h1>
 
     <h2>No Shadow</h2>
+    <!-- Rending this element causes its CSS to affect the entire page. -->
     <counter-no-shadow count="3"></counter-no-shadow>
 
     <h2>Shadow Open</h2>
