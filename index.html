@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <stylesheet> </stylesheet>
+    <script src="counter-no-shadow.js"></script>
+    <script src="counter-shadow-open.js"></script>
+    <script src="counter-shadow-closed.js"></script>
+    <script>
+      window.onload = () => {
+        console.log("index.html: onload entered");
+
+        const cns = document.querySelector("counter-no-shadow");
+        cns.setAttribute("count", 5);
+
+        const cso = document.querySelector("counter-shadow-open");
+        cso.setAttribute("count", 5);
+
+        //TODO: Does this work?
+        const csc = document.querySelector("counter-shadow-closed");
+        csc.setAttribute("count", 5);
+      };
+
+      function reportCount() {
+        const counter = document.querySelector("counter-shadow-open");
+        alert(counter.count);
+      }
+    </script>
+  </head>
+  <body>
+    <h1>Counters</h1>
+
+    <h2>No Shadow</h2>
+    <counter-no-shadow count="3"></counter-no-shadow>
+
+    <h2>Shadow Open</h2>
+    <counter-shadow-open count="3"></counter-shadow-open>
+
+    <h2>Shadow Closed</h2>
+    <counter-shadow-closed count="3"></counter-shadow-closed>
+
+    <h2>Lit</h2>
+    <!-- TODO: Implement a counter component in Lit for comparison. -->
+
+    <h2>Outside Web Components</h2>
+    <p>Note whether styles in the web components affect this.</p>
+    <button onclick="reportCount()" type="button">Click Me</button>
+  </body>
+</html>
