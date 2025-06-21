@@ -73,8 +73,8 @@
         span = counter.querySelector("span");
         console.log("lit: span =", span); // null
         span = counter.shadowRoot.querySelector("span");
+        if (span) span.textContent = 20; // works but get an error; Why?
         console.log("lit: span =", span); // not null
-        span.textContent = 20; // ERROR - Why?
       }
     </script>
   </head>
