@@ -31,6 +31,9 @@
         // This works even though the shadow DOM is in closed mode.
         const csc = document.querySelector("counter-shadow-closed");
         csc.setAttribute("count", 5);
+
+        const cl = document.querySelector("counter-lit");
+        cl.setAttribute("count", 5);
       };
 
       function reportCount() {
@@ -49,7 +52,7 @@
         // We can access this span element using the shadow root.
         span = counter.querySelector("span");
         console.log("shadow open: span =", span); // null
-        span = counter.shadowRoot.querySelector("span");
+        span = counter.shadowRoot.querySelector("span"); // not null
         span.textContent = 20; // works
 
         counter = document.querySelector("counter-shadow-closed");
@@ -59,6 +62,19 @@
         span = counter.querySelector("span");
         console.log("shadow closed: span =", span); // null
         console.log("shadow closed: shadowRoot =", counter.shadowRoot); // null
+
+        counter = document.querySelector("counter-lit");
+        counter.count = 19;
+        console.log("lit: counter.count =", counter.count);
+
+        // Lit web components use a shadow DOM by default,
+        // that can be avoided by implementing the following method:
+        // createRenderRoot() { return this; }
+        span = counter.querySelector("span");
+        console.log("lit: span =", span); // null
+        span = counter.shadowRoot.querySelector("span");
+        console.log("lit: span =", span); // not null
+        span.textContent = 20; // ERROR - Why?
       }
     </script>
   </head>
