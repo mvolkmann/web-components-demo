@@ -1,0 +1,17 @@
+{
+  "name": "web-components-demo",
+  "version": "1.0.0",
+  "description": "This demonstrates several approaches to implementing web components.",
+  "scripts": {
+    "dev": "http-server ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mvolkmann/web-components-demo.git"
+  },
+  "author": "R. Mark Volkmann",
+  "license": "MIT",
+  "dependencies": {
+    "http-server": "^14.1.1"
+  }
+}
