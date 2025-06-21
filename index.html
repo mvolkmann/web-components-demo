@@ -37,13 +37,27 @@
         counter.count = 19;
         console.log("no shadow: counter.count =", counter.count);
 
+        // We can access this span element directly.
+        let span = counter.querySelector("span");
+        span.textContent = 20; // works
+
         counter = document.querySelector("counter-shadow-open");
         counter.count = 19;
         console.log("shadow open: counter.count =", counter.count);
 
+        // We can access this span element using the shadow root.
+        span = counter.querySelector("span");
+        console.log("shadow open: span =", span); // null
+        span = counter.shadowRoot.querySelector("span");
+        span.textContent = 20; // works
+
         counter = document.querySelector("counter-shadow-closed");
         counter.count = 19;
         console.log("shadow closed: counter.count =", counter.count);
+
+        span = counter.querySelector("span");
+        console.log("shadow closed: span =", span); // null
+        console.log("shadow closed: shadowRoot =", counter.shadowRoot); // null
       }
     </script>
   </head>
