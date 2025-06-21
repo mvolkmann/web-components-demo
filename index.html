@@ -24,8 +24,17 @@
       };
 
       function reportCount() {
-        const counter = document.querySelector("counter-shadow-open");
-        alert(counter.count);
+        let counter = document.querySelector("counter-no-shadow");
+        counter.count = 19;
+        console.log("no shadow: counter.count =", counter.count);
+
+        counter = document.querySelector("counter-shadow-open");
+        counter.count = 19;
+        console.log("shadow open: counter.count =", counter.count);
+
+        counter = document.querySelector("counter-shadow-closed");
+        counter.count = 19;
+        console.log("shadow closed: counter.count =", counter.count);
       }
     </script>
   </head>
