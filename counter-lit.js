@@ -6,7 +6,9 @@ import {
 
 class CounterLit extends LitElement {
   static properties = {
-    count: { type: Number },
+    // Setting reflect to true keeps the count attribute
+    // in sync with the count property.
+    count: { type: Number, reflect: true },
   };
 
   static styles = css`
