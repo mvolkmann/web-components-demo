@@ -47,16 +47,20 @@ class CounterLit extends LitElement {
     if (this.count > 0) this.count--;
   }
 
-  increment() {
-    this.count++;
-  }
-
   render() {
     return html`
       <div>
+        <!-- Event handler code can be placed inline.
+        <button
+          id="decrement-btn"
+          @click=${() => {
+          if (this.count > 0) this.count--;
+        }}
+        >-</button>
+        -->
         <button id="decrement-btn" @click=${this.decrement}>-</button>
         <span>${this.count}</span>
-        <button id="increment-btn" @click=${this.increment}>+</button>
+        <button id="increment-btn" @click=${() => this.count++}>+</button>
       </div>
     `;
   }
