@@ -45,6 +45,8 @@
         let span = counter.querySelector("span");
         span.textContent = 20; // works
 
+        //---
+
         counter = document.querySelector("counter-shadow-open");
         counter.count = 19;
         console.log("shadow open: counter.count =", counter.count);
@@ -55,6 +57,8 @@
         span = counter.shadowRoot.querySelector("span"); // not null
         span.textContent = 20; // works
 
+        //---
+
         counter = document.querySelector("counter-shadow-closed");
         counter.count = 19;
         console.log("shadow closed: counter.count =", counter.count);
@@ -62,6 +66,9 @@
         span = counter.querySelector("span");
         console.log("shadow closed: span =", span); // null
         console.log("shadow closed: shadowRoot =", counter.shadowRoot); // null
+        // We cannot access the span element in this web component.
+
+        //---
 
         counter = document.querySelector("counter-lit");
         counter.count = 19;
@@ -73,8 +80,9 @@
         span = counter.querySelector("span");
         console.log("lit: span =", span); // null
         span = counter.shadowRoot.querySelector("span");
-        if (span) span.textContent = 20; // works but get an error; Why?
-        console.log("lit: span =", span); // not null
+        span.textContent = 20; // works but get
+        // "TypeError: Cannot set properties of null (setting 'data')"; Why?
+        console.log("lit: counter.count =", counter.count);
       }
     </script>
   </head>

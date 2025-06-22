@@ -37,10 +37,11 @@ class CounterLit extends LitElement {
     }
   `;
 
+  /* Since we don't need to do anything in this constructor, it can be omitted. 
   constructor() {
     super();
-    this.count = 0;
   }
+  */
 
   decrement() {
     if (this.count > 0) this.count--;
