@@ -1,0 +1,1 @@
+class ZitElement extends HTMLElement {}

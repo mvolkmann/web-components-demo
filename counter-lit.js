@@ -1,3 +1,5 @@
+// This code would be simplified a bit if the TypeScript decorator syntax
+// was used, but that requires a build process.
 import {
   css,
   html,

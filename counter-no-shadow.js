@@ -67,12 +67,19 @@ class CounterNoShadow extends HTMLElement {
     // This cannot be done in the constructor.
     this.appendChild(counterTemplate.content.cloneNode(true));
 
-    this.querySelector("#decrement-btn").addEventListener("click", () => {
-      this.decrement();
-    });
-    this.querySelector("#increment-btn").addEventListener("click", () => {
-      this.increment();
-    });
+    // This is a more direct approach to event handling
+    // that does not require the handleEvent method.
+    // this.querySelector("#decrement-btn").addEventListener("click", () => {
+    //   this.decrement();
+    // });
+    // this.querySelector("#increment-btn").addEventListener("click", () => {
+    //   this.increment();
+    // });
+
+    // This is an alternate approach to event handling
+    // that causes the handleEvent method to be called.
+    this.querySelector("#decrement-btn").addEventListener("click", this);
+    this.querySelector("#increment-btn").addEventListener("click", this);
 
     this.span = this.querySelector("span");
     this.update();
@@ -98,6 +105,15 @@ class CounterNoShadow extends HTMLElement {
   increment() {
     this.count++;
     this.update();
+  }
+
+  handleEvent(event) {
+    console.log("counter-no-shadow.js handleEvent: event =", event);
+    if (event.type === "click") {
+      const { id } = event.target;
+      const methodName = id.split("-")[0];
+      this[methodName]();
+    }
   }
 
   update() {
