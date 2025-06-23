@@ -143,18 +143,16 @@ class ZitElement extends HTMLElement {
 
           if (this.hasAttribute(propertyName)) {
             const oldAttr = this.getAttribute(propertyName);
-            if (value !== oldAttr) {
-              this.setAttribute(propertyName, value);
-            }
+            if (value !== oldAttr) this.setAttribute(propertyName, value);
           }
-
-          //if (value === oldValue) return;
 
           // Update all the elements whose text content
           // is the value of this property.
           for (const element of elements) {
             if (element.localName === "input") {
-              element.setAttribute("value", value);
+              // We need both of these!
+              element.value = value; // updates displayed value
+              element.setAttribute("value", value); // updates attribute in DOM
             } else {
               element.textContent = value;
             }

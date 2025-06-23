@@ -29,8 +29,8 @@ zitDemoTemplate.innerHTML = /*html*/ `
   </style>
   <div>
     <div>
-      <label for="multiplier">Multiplier:</label>
-      <input id="multiplier" type="number" min="1" value="$factor" />
+      <label for="factor">Factor:</label>
+      <input id="factor" type="number" min="1" value="$factor" />
     </div>
     <button id="decrement-btn" onClick="decrement">-</button>
     <span>$count</span>
