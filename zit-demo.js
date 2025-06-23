@@ -1,3 +1,36 @@
+const zitDemoTemplate = document.createElement("template");
+zitDemoTemplate.innerHTML = /*html*/ `
+  <style>
+    button {
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+
+      aspect-ratio: 1;
+      border-radius: 50%;
+      color: white;
+      font-size: inherit;
+      height: 2.5rem;
+    }
+
+    #decrement-btn {
+      background-color: red;
+    }
+
+    #increment-btn {
+      background-color: green;
+    }
+
+    div {
+      font-size: 2rem;
+    }
+  </style>
+  <div>
+    <button id="decrement-btn" onClick="decrement">-</button>
+    <span>${this.count}</span>
+    <button id="increment-btn" onClick="increment">+</button>
+  </div>
+`;
 class ZitDemo extends ZitElement {
   static get observedAttributes() {
     return ["count"];
@@ -6,7 +39,7 @@ class ZitDemo extends ZitElement {
   constructor() {
     super();
     const root = this.attachShadow({ mode: "open" });
-    root.appendChild(counterTemplate.content.cloneNode(true));
+    root.appendChild(zitDemoTemplate.content.cloneNode(true));
   }
 
   attributeChangedCallback(name, oldValue, newValue) {
@@ -18,13 +51,7 @@ class ZitDemo extends ZitElement {
 
   connectedCallback() {
     const root = this.shadowRoot;
-    root.querySelector("#decrement-btn").addEventListener("click", () => {
-      this.decrement();
-    });
-    root.querySelector("#increment-btn").addEventListener("click", () => {
-      this.increment();
-    });
-
+    this.wireEvents();
     this.span = root.querySelector("span");
     this.update();
   }

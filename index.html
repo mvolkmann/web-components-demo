@@ -13,17 +13,16 @@
       }
     </style>
 
-    <script src="counter-no-shadow.js"></script>
+    <!-- <script src="counter-no-shadow.js"></script>
     <script src="counter-shadow-open.js"></script>
     <script src="counter-shadow-closed.js"></script>
-    <script src="counter-lit.js" type="module"></script>
+    <script src="counter-lit.js" type="module"></script> -->
     <script src="zit-element.js"></script>
     <script src="zit-demo.js"></script>
 
     <script>
+      /*
       window.onload = () => {
-        console.log("index.html: onload entered");
-
         const cns = document.querySelector("counter-no-shadow");
         cns.setAttribute("count", 5);
 
@@ -37,8 +36,10 @@
         const cl = document.querySelector("counter-lit");
         cl.setAttribute("count", 5);
       };
+      */
 
       function reportCount() {
+        /*
         let counter = document.querySelector("counter-no-shadow");
         counter.count = 19;
         console.log("no shadow: counter.count =", counter.count);
@@ -46,9 +47,9 @@
         // We can access this span element directly.
         let span = counter.querySelector("span");
         span.textContent = 20; // works
-
+        */
         //---
-
+        /*
         counter = document.querySelector("counter-shadow-open");
         counter.count = 19;
         console.log("shadow open: counter.count =", counter.count);
@@ -58,9 +59,9 @@
         console.log("shadow open: span =", span); // null
         span = counter.shadowRoot.querySelector("span"); // not null
         span.textContent = 20; // works
-
+        */
         //---
-
+        /*
         counter = document.querySelector("counter-shadow-closed");
         counter.count = 19;
         console.log("shadow closed: counter.count =", counter.count);
@@ -69,9 +70,9 @@
         console.log("shadow closed: span =", span); // null
         console.log("shadow closed: shadowRoot =", counter.shadowRoot); // null
         // We cannot access the span element in this web component.
-
+        */
         //---
-
+        /*
         counter = document.querySelector("counter-lit");
         counter.count = 19;
         console.log("lit: counter.count =", counter.count);
@@ -85,14 +86,16 @@
         span.textContent = 20; // works but get
         // "TypeError: Cannot set properties of null (setting 'data')"; Why?
         console.log("lit: counter.count =", counter.count);
+        */
       }
     </script>
   </head>
   <body>
+    <!--
     <h1>Counters</h1>
 
     <h2>No Shadow</h2>
-    <!-- Rending this element causes its CSS to affect the entire page. -->
+    !-- Rending this element causes its CSS to affect the entire page. --
     <counter-no-shadow count="3"></counter-no-shadow>
 
     <h2>Shadow Open</h2>
@@ -103,12 +106,15 @@
 
     <h2>Lit</h2>
     <counter-lit count="3"></counter-lit>
+    -->
 
     <h2>Zit</h2>
     <zit-demo count="3"></zit-demo>
 
+    <!--
     <h2>Outside Web Components</h2>
     <p>Note whether styles in the web components affect this.</p>
     <button onclick="reportCount()" type="button">Click Me</button>
+    -->
   </body>
 </html>
