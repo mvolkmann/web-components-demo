@@ -1,3 +1,10 @@
+function evalInContext(expression, context) {
+  return Function(
+    ...Object.keys(context),
+    `return (${expression});`
+  )(...Object.values(context));
+}
+
 const toKebabCase = (str) =>
   str
     // Insert a dash before each uppercase letter
@@ -6,6 +13,9 @@ const toKebabCase = (str) =>
     .toLowerCase();
 
 class ZitElement extends HTMLElement {
+  expressionToElementsMap = {};
+  static propertyToExpressionsMap = {};
+  static identifierRE = /[a-zA-Z_$][a-zA-Z0-9_$]*/;
   reactiveMap = {};
 
   attributeChangedCallback(name, oldValue, newValue) {
@@ -24,30 +34,13 @@ class ZitElement extends HTMLElement {
     const elements = this.shadowRoot.querySelectorAll("*");
     for (const element of elements) {
       const text = element.textContent.trim();
-      if (text.startsWith("$")) {
-        const propertyName = text.slice(1);
-        let elements = this.reactiveMap[propertyName];
-
-        if (!elements) {
-          elements = this.reactiveMap[propertyName] = [];
-          Object.defineProperty(this, propertyName, {
-            get() {
-              return this["_" + propertyName];
-            },
-            set(value) {
-              this["_" + propertyName] = value;
-
-              const oldValue = this.getAttribute(propertyName);
-              if (value !== oldValue) this.setAttribute(propertyName, value);
-
-              for (const element of elements) {
-                element.textContent = value;
-              }
-            },
-          });
+      if (text.startsWith("$:")) {
+        this.registerExpression(element, text.slice(2).trim());
+      } else if (text.startsWith("$")) {
+        const rest = text.slice(1).trim();
+        if (ZitElement.identifierRE.test(rest)) {
+          this.registerPropertyReference(element, rest);
         }
-
-        elements.push(element);
       }
     }
   }
@@ -57,6 +50,59 @@ class ZitElement extends HTMLElement {
     if (!customElements.get(elementName)) {
       customElements.define(elementName, this);
     }
+  }
+
+  registerExpression(element, expression) {
+    const identifiers = expression.match(ZitElement.identifierRE);
+    for (const identifier of identifiers) {
+      let expressions = ZitElement.propertyToExpressionsMap[identifier];
+      if (!expressions) {
+        expressions = ZitElement.propertyToExpressionsMap[identifier] = [];
+      }
+      expressions.push(expression);
+
+      let elements = this.expressionToElementsMap[expression];
+      if (!elements) elements = this.expressionToElementsMap[expression] = [];
+      elements.push(element);
+    }
+  }
+
+  registerPropertyReference(element, propertyName) {
+    let elements = this.reactiveMap[propertyName];
+
+    if (!elements) {
+      elements = this.reactiveMap[propertyName] = [];
+      Object.defineProperty(this, propertyName, {
+        get() {
+          return this["_" + propertyName];
+        },
+        set(value) {
+          this["_" + propertyName] = value;
+
+          const oldValue = this.getAttribute(propertyName);
+          if (value !== oldValue) this.setAttribute(propertyName, value);
+
+          // Update all the elements whose text content
+          // is the value of this property.
+          for (const element of elements) {
+            element.textContent = value;
+          }
+
+          // Update all the elements whose text content
+          // is an expression that uses this property.
+          const expressions = ZitElement.propertyToExpressionsMap[propertyName];
+          for (const expression of expressions) {
+            const value = evalInContext(expression, this);
+            const elements = this.expressionToElementsMap[expression];
+            for (const element of elements) {
+              element.textContent = value;
+            }
+          }
+        },
+      });
+    }
+
+    elements.push(element);
   }
 
   wireEvents() {

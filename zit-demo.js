@@ -31,6 +31,7 @@ zitDemoTemplate.innerHTML = /*html*/ `
     <button id="decrement-btn" onClick="decrement">-</button>
     <span>$count</span>
     <button id="increment-btn" onClick="increment">+</button>
+    <span>$: count * 2</span>
   </div>
 `;
 class ZitDemo extends ZitElement {
