@@ -14,7 +14,8 @@ const toKebabCase = (str) =>
 
 class ZitElement extends HTMLElement {
   static propertyToExpressionsMap = {};
-  static identifierRE = /[a-zA-Z_$][a-zA-Z0-9_$]*/;
+  static identifierRE = /^[a-zA-Z_$][a-zA-Z0-9_$]*$/;
+  static identifiersRE = /[a-zA-Z_$][a-zA-Z0-9_$]*/g;
 
   expressionToElementsMap = {};
   reactiveMap = {};
@@ -48,25 +49,48 @@ class ZitElement extends HTMLElement {
       }
 
       if (element.localName === "input") {
-        const value = element.getAttribute("value");
-        if (value.startsWith("$")) {
-          const rest = value.slice(1).trim();
-          if (ZitElement.identifierRE.test(rest)) {
-            const propertyName = rest;
+        this.makeInputReactive(element);
+      }
+    }
+  }
 
-            this.registerPropertyReference(element, propertyName);
+  makeInputReactive(input) {
+    const value = input.getAttribute("value");
+    if (!value.startsWith("$")) return;
 
-            element.addEventListener("input", (event) => {
-              this[propertyName] = event.target.value;
-            });
+    const rest = value.slice(1).trim();
+    // If that value after the $ is not a valid identifier, bail out.
+    if (!ZitElement.identifierRE.test(rest)) return;
 
-            // Change the value of the "value" attribute
-            // to the value of the referenced property.
-            element.setAttribute("value", this[propertyName]);
+    const propertyName = rest;
+
+    this.registerPropertyReference(input, propertyName);
+
+    input.addEventListener("input", (event) => {
+      this[propertyName] = event.target.value;
+    });
+
+    // If the input "value" attribute is modified,
+    // update the value of the referenced property.
+    const observer = new MutationObserver((mutations) => {
+      for (const mutation of mutations) {
+        if (mutation.type === "attributes") {
+          if (mutation.attributeName === "value") {
+            const oldValue = this[propertyName];
+            const newValue = input.getAttribute("value");
+            if (newValue !== oldValue) this[propertyName] = newValue;
           }
         }
       }
-    }
+    });
+    observer.observe(input, {
+      attributes: true,
+      attributeFilter: ["value"],
+    });
+
+    // Change the value of the "value" attribute from a property reference
+    // to the value of the referenced property.
+    input.setAttribute("value", this[propertyName]);
   }
 
   static register() {
@@ -78,9 +102,7 @@ class ZitElement extends HTMLElement {
 
   // Do not place untrusted expressions the text content of elements!
   registerExpression(element, expression) {
-    const re = ZitElement.identifierRE;
-    const reGlobal = new RegExp(re.source, "g");
-    const identifiers = expression.match(reGlobal);
+    const identifiers = expression.match(ZitElement.identifiersRE);
     for (const identifier of identifiers) {
       let expressions = ZitElement.propertyToExpressionsMap[identifier];
       if (!expressions) {
@@ -112,26 +134,21 @@ class ZitElement extends HTMLElement {
       elements = this.reactiveMap[propertyName] = [];
 
       Object.defineProperty(this, propertyName, {
-        /*************  ✨ Windsurf Command ⭐  *************/
-        /**
-         * Gets the value of the property.
-         *
-         * We use the "_" prefix when storing the value
-         * because the property is replaced below with Object.defineProperty.
-         *
-         * @returns {any} The value of the property.
-         */
-        /*******  b1a28131-f096-4645-808e-38975abbdaff  *******/
         get() {
           return this["_" + propertyName];
         },
         set(value) {
+          const oldValue = this["_" + propertyName];
           this["_" + propertyName] = value;
 
-          const oldValue = this.getAttribute(propertyName);
-          if (value !== oldValue) {
-            this.setAttribute(propertyName, value);
+          if (this.hasAttribute(propertyName)) {
+            const oldAttr = this.getAttribute(propertyName);
+            if (value !== oldAttr) {
+              this.setAttribute(propertyName, value);
+            }
           }
+
+          //if (value === oldValue) return;
 
           // Update all the elements whose text content
           // is the value of this property.
