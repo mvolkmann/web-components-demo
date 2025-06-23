@@ -1,4 +1,3 @@
-//TODO: Make this safer!
 function evalInContext(expression, context) {
   return Function(
     ...Object.keys(context),
@@ -43,7 +42,30 @@ class ZitElement extends HTMLElement {
       } else if (text.startsWith("$")) {
         const rest = text.slice(1).trim();
         if (ZitElement.identifierRE.test(rest)) {
-          this.registerPropertyReference(element, rest);
+          const propertyName = rest;
+          this.registerPropertyReference(element, propertyName);
+        }
+      }
+
+      if (element.localName === "input") {
+        const value = element.getAttribute("value");
+        if (value.startsWith("$")) {
+          const rest = value.slice(1).trim();
+          if (ZitElement.identifierRE.test(rest)) {
+            const propertyName = rest;
+
+            this.registerPropertyReference(element, propertyName);
+
+            element.addEventListener("input", (event) => {
+              this[propertyName] = event.target.value;
+            });
+
+            // Change the value of the "value" attribute
+            // to the value of the referenced property.
+            const value = this[propertyName];
+            //TODO: Need to check for a value?
+            if (value) element.setAttribute("value", value);
+          }
         }
       }
     }
@@ -56,8 +78,11 @@ class ZitElement extends HTMLElement {
     }
   }
 
+  // Do not place untrusted expressions the text content of elements!
   registerExpression(element, expression) {
-    const identifiers = expression.match(ZitElement.identifierRE);
+    const re = ZitElement.identifierRE;
+    const reGlobal = new RegExp(re.source, "g");
+    const identifiers = expression.match(reGlobal);
     for (const identifier of identifiers) {
       let expressions = ZitElement.propertyToExpressionsMap[identifier];
       if (!expressions) {
@@ -69,14 +94,36 @@ class ZitElement extends HTMLElement {
       if (!elements) elements = this.expressionToElementsMap[expression] = [];
       elements.push(element);
     }
+
+    setTimeout(() => {
+      element.textContent = evalInContext(expression, this);
+    }, 1000);
   }
 
   registerPropertyReference(element, propertyName) {
+    // Copy the property value to
+    // a new property with a leading underscore
+    // because the property is replaced below with Object.defineProperty.
+    this["_" + propertyName] = this[propertyName];
+
     let elements = this.reactiveMap[propertyName];
 
+    // We only want to do this once for each property,
+    // not once for each element that uses the property.
     if (!elements) {
       elements = this.reactiveMap[propertyName] = [];
+
       Object.defineProperty(this, propertyName, {
+        /*************  ✨ Windsurf Command ⭐  *************/
+        /**
+         * Gets the value of the property.
+         *
+         * We use the "_" prefix when storing the value
+         * because the property is replaced below with Object.defineProperty.
+         *
+         * @returns {any} The value of the property.
+         */
+        /*******  b1a28131-f096-4645-808e-38975abbdaff  *******/
         get() {
           return this["_" + propertyName];
         },
@@ -84,12 +131,18 @@ class ZitElement extends HTMLElement {
           this["_" + propertyName] = value;
 
           const oldValue = this.getAttribute(propertyName);
-          if (value !== oldValue) this.setAttribute(propertyName, value);
+          if (value !== oldValue) {
+            this.setAttribute(propertyName, value);
+          }
 
           // Update all the elements whose text content
           // is the value of this property.
           for (const element of elements) {
-            element.textContent = value;
+            if (element.localName === "input") {
+              element.setAttribute("value", value);
+            } else {
+              element.textContent = value;
+            }
           }
 
           // Update all the elements whose text content
@@ -99,7 +152,11 @@ class ZitElement extends HTMLElement {
             const value = evalInContext(expression, this);
             const elements = this.expressionToElementsMap[expression];
             for (const element of elements) {
-              element.textContent = value;
+              if (element.localName === "input") {
+                element.setAttribute("value", value);
+              } else {
+                element.textContent = value;
+              }
             }
           }
         },

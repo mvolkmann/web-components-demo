@@ -28,10 +28,15 @@ zitDemoTemplate.innerHTML = /*html*/ `
     }
   </style>
   <div>
+    <div>
+      <label for="multiplier">Multiplier:</label>
+      <input id="multiplier" type="number" min="1" value="$factor" />
+    </div>
     <button id="decrement-btn" onClick="decrement">-</button>
     <span>$count</span>
     <button id="increment-btn" onClick="increment">+</button>
-    <span>$: count * 2</span>
+    <span>$: count * factor</span>
+    <!--div>$: alert('hacked')</div-->
   </div>
 `;
 class ZitDemo extends ZitElement {
@@ -39,6 +44,8 @@ class ZitDemo extends ZitElement {
   static get observedAttributes() {
     return ["count"];
   }
+
+  factor = 1;
 
   constructor() {
     super();
