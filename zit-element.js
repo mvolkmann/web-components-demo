@@ -1,3 +1,4 @@
+//TODO: Make this safer!
 function evalInContext(expression, context) {
   return Function(
     ...Object.keys(context),
@@ -13,15 +14,18 @@ const toKebabCase = (str) =>
     .toLowerCase();
 
 class ZitElement extends HTMLElement {
-  expressionToElementsMap = {};
   static propertyToExpressionsMap = {};
   static identifierRE = /[a-zA-Z_$][a-zA-Z0-9_$]*/;
+
+  expressionToElementsMap = {};
   reactiveMap = {};
 
   attributeChangedCallback(name, oldValue, newValue) {
+    /*
     console.log(
       `zit-element: ${name} attribute changed from ${oldValue} to ${newValue}`
     );
+    */
     this[name] = newValue;
   }
 
