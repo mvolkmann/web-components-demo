@@ -1,9 +1,8 @@
-function zit(strings, ...params) {
-  console.log("zit-element.js zit: strings =", strings);
-  console.log("zit-element.js zit: params =", params);
-}
-
 class ZitElement extends HTMLElement {
+  connectedCallback() {
+    this.wireEvents();
+  }
+
   wireEvents() {
     const elements = this.shadowRoot.querySelectorAll("*");
     for (const element of elements) {

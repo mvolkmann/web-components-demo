@@ -50,9 +50,8 @@ class ZitDemo extends ZitElement {
   }
 
   connectedCallback() {
-    const root = this.shadowRoot;
-    this.wireEvents();
-    this.span = root.querySelector("span");
+    super.connectedCallback();
+    this.span = this.shadowRoot.querySelector("span");
     this.update();
   }
 
