@@ -27,7 +27,7 @@ zitDemoTemplate.innerHTML = /*html*/ `
   </style>
   <div>
     <button id="decrement-btn" onClick="decrement">-</button>
-    <span>${this.count}</span>
+    <span>$count</span>
     <button id="increment-btn" onClick="increment">+</button>
   </div>
 `;
@@ -42,43 +42,17 @@ class ZitDemo extends ZitElement {
     root.appendChild(zitDemoTemplate.content.cloneNode(true));
   }
 
-  attributeChangedCallback(name, oldValue, newValue) {
-    console.log(
-      `counter-shadow-open: ${name} attribute changed from ${oldValue} to ${newValue}`
-    );
-    if (this.isConnected) this.update();
-  }
-
   connectedCallback() {
     super.connectedCallback();
-    this.span = this.shadowRoot.querySelector("span");
-    this.update();
-  }
-
-  // Treat the count attribute as the source of truth
-  // rather than adding a property.
-  get count() {
-    return this.getAttribute("count") || 0;
-  }
-
-  set count(newCount) {
-    return this.setAttribute("count", newCount);
+    this.count = this.getAttribute("count") || 0;
   }
 
   decrement() {
-    if (this.count > 0) {
-      this.count--;
-      this.update();
-    }
+    if (this.count > 0) this.count--;
   }
 
   increment() {
     this.count++;
-    this.update();
-  }
-
-  update() {
-    this.span.textContent = this.count;
   }
 }
 
