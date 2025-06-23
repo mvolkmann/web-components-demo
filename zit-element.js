@@ -1,3 +1,10 @@
+const toKebabCase = (str) =>
+  str
+    // Insert a dash before each uppercase letter
+    // that is preceded by a lowercase letter or digit.
+    .replace(/([a-z0-9])([A-Z])/g, "$1-$2")
+    .toLowerCase();
+
 class ZitElement extends HTMLElement {
   reactiveMap = {};
 
@@ -45,6 +52,13 @@ class ZitElement extends HTMLElement {
     }
   }
 
+  static register() {
+    const elementName = toKebabCase(this.name);
+    if (!customElements.get(elementName)) {
+      customElements.define(elementName, this);
+    }
+  }
+
   wireEvents() {
     const elements = this.shadowRoot.querySelectorAll("*");
     for (const element of elements) {
@@ -62,3 +76,5 @@ class ZitElement extends HTMLElement {
     }
   }
 }
+
+export default ZitElement;

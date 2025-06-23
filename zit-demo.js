@@ -1,3 +1,5 @@
+import ZitElement from "./zit-element.js";
+
 const zitDemoTemplate = document.createElement("template");
 zitDemoTemplate.innerHTML = /*html*/ `
   <style>
@@ -59,4 +61,4 @@ class ZitDemo extends ZitElement {
   }
 }
 
-customElements.define("zit-demo", ZitDemo);
+ZitDemo.register();
