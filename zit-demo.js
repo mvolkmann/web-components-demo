@@ -32,6 +32,7 @@ zitDemoTemplate.innerHTML = /*html*/ `
   </div>
 `;
 class ZitDemo extends ZitElement {
+  //TODO: Can you remove the need for this?
   static get observedAttributes() {
     return ["count"];
   }
@@ -43,7 +44,9 @@ class ZitDemo extends ZitElement {
   }
 
   connectedCallback() {
+    //TODO: Can you remove the need for the next line?
     super.connectedCallback();
+
     this.count = this.getAttribute("count") || 0;
   }
 
