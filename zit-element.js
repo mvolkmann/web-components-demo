@@ -62,9 +62,7 @@ class ZitElement extends HTMLElement {
 
             // Change the value of the "value" attribute
             // to the value of the referenced property.
-            const value = this[propertyName];
-            //TODO: Need to check for a value?
-            if (value) element.setAttribute("value", value);
+            element.setAttribute("value", this[propertyName]);
           }
         }
       }
