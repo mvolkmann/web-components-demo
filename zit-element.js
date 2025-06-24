@@ -18,7 +18,7 @@ class ZitElement extends HTMLElement {
   static identifiersRE = /[a-zA-Z_$][a-zA-Z0-9_$]*/g;
 
   expressionToElementsMap = {};
-  reactiveMap = {};
+  propertyReferencesMap = {};
 
   attributeChangedCallback(name, oldValue, newValue) {
     /*
@@ -37,60 +37,55 @@ class ZitElement extends HTMLElement {
   makeReactive() {
     const elements = this.shadowRoot.querySelectorAll("*");
     for (const element of elements) {
+      // Evaluate the text content of the element.
       const text = element.textContent.trim();
       if (text.startsWith("$:")) {
-        this.registerExpression(element, text.slice(2).trim());
+        const expression = text.slice(2).trim();
+        this.registerExpression(expression, element);
       } else if (text.startsWith("$")) {
-        const rest = text.slice(1).trim();
-        if (ZitElement.identifierRE.test(rest)) {
-          const propertyName = rest;
-          this.registerPropertyReference(element, propertyName);
+        const propertyName = text.slice(1).trim();
+        if (ZitElement.identifierRE.test(propertyName)) {
+          this.registerPropertyReference(propertyName, element);
         }
       }
 
-      if (element.localName === "input") {
-        this.makeInputReactive(element);
-      }
-    }
-  }
+      // Evaluate the attributes of the element.
+      const attrNames = element.getAttributeNames();
+      console.log("makeReactive: attrNames =", attrNames);
+      for (const attrName of attrNames) {
+        const attrValue = element.getAttribute(attrName);
 
-  makeInputReactive(input) {
-    const value = input.getAttribute("value");
-    if (!value.startsWith("$")) return;
+        if (attrValue.startsWith("$:")) {
+          const expression = attrValue.slice(2).trim();
+          this.registerExpression(expression, element, attrName);
+        } else if (attrValue.startsWith("$")) {
+          const propertyName = attrValue.slice(1).trim();
+          if (ZitElement.identifierRE.test(propertyName)) {
+            this.registerPropertyReference(propertyName, element, attrName);
 
-    const rest = value.slice(1).trim();
-    // If that value after the $ is not a valid identifier, bail out.
-    if (!ZitElement.identifierRE.test(rest)) return;
-
-    const propertyName = rest;
-
-    this.registerPropertyReference(input, propertyName);
-
-    input.addEventListener("input", (event) => {
-      this[propertyName] = event.target.value;
-    });
-
-    // If the input "value" attribute is modified,
-    // update the value of the referenced property.
-    const observer = new MutationObserver((mutations) => {
-      for (const mutation of mutations) {
-        if (mutation.type === "attributes") {
-          if (mutation.attributeName === "value") {
-            const oldValue = this[propertyName];
-            const newValue = input.getAttribute("value");
-            if (newValue !== oldValue) this[propertyName] = newValue;
+            // Change the value of the attribute from a property reference
+            // to the value of the referenced property.
+            element.setAttribute(attrName, this[propertyName]);
           }
         }
       }
-    });
-    observer.observe(input, {
-      attributes: true,
-      attributeFilter: ["value"],
-    });
 
-    // Change the value of the "value" attribute from a property reference
-    // to the value of the referenced property.
-    input.setAttribute("value", this[propertyName]);
+      // Listen for attribute value changes and
+      // update the corresponding property if it exists.
+      const observer = new MutationObserver((mutations) => {
+        for (const mutation of mutations) {
+          if (mutation.type === "attributes") {
+            const { attributeName } = mutation;
+            if (this.hasOwnProperty(attributeName)) {
+              const oldValue = this[attributeName];
+              const newValue = element.getAttribute(attributeName);
+              if (newValue !== oldValue) this[attributeName] = newValue;
+            }
+          }
+        }
+      });
+      observer.observe(element, { attributes: true });
+    }
   }
 
   static register() {
@@ -101,7 +96,7 @@ class ZitElement extends HTMLElement {
   }
 
   // Do not place untrusted expressions the text content of elements!
-  registerExpression(element, expression) {
+  registerExpression(expression, element, attrName) {
     const identifiers = expression.match(ZitElement.identifiersRE);
     for (const identifier of identifiers) {
       let expressions = ZitElement.propertyToExpressionsMap[identifier];
@@ -120,18 +115,23 @@ class ZitElement extends HTMLElement {
     }, 1000);
   }
 
-  registerPropertyReference(element, propertyName) {
-    // Copy the property value to
-    // a new property with a leading underscore
-    // because the property is replaced below with Object.defineProperty.
+  registerPropertyReference(propertyName, element, attrName) {
+    console.log("registerPropertyReference:", {
+      propertyName,
+      element,
+      attrName,
+    });
+
+    // Copy the property value to a new property with a leading underscore.
+    // The property is replaced below with Object.defineProperty.
     this["_" + propertyName] = this[propertyName];
 
-    let elements = this.reactiveMap[propertyName];
+    let references = this.propertyReferencesMap[propertyName];
 
     // We only want to do this once for each property,
     // not once for each element that uses the property.
-    if (!elements) {
-      elements = this.reactiveMap[propertyName] = [];
+    if (!references) {
+      references = this.propertyReferencesMap[propertyName] = [];
 
       Object.defineProperty(this, propertyName, {
         get() {
@@ -141,20 +141,21 @@ class ZitElement extends HTMLElement {
           const oldValue = this["_" + propertyName];
           this["_" + propertyName] = value;
 
+          // If the property name matches an attribute on the custom element,
+          // update that attribute.
           if (this.hasAttribute(propertyName)) {
             const oldAttr = this.getAttribute(propertyName);
             if (value !== oldAttr) this.setAttribute(propertyName, value);
           }
 
-          // Update all the elements whose text content
-          // is the value of this property.
-          for (const element of elements) {
-            if (element.localName === "input") {
-              // We need both of these!
-              element.value = value; // updates displayed value
-              element.setAttribute("value", value); // updates attribute in DOM
-            } else {
+          // Update all the references to this property.
+          for (const reference of references) {
+            if (reference instanceof Element) {
               element.textContent = value;
+            } else {
+              const { element, attrName } = reference;
+              element.value = value; // updates displayed value
+              element.setAttribute(attrName, value); // updates attribute in DOM
             }
           }
 
@@ -165,6 +166,7 @@ class ZitElement extends HTMLElement {
             const value = evalInContext(expression, this);
             const elements = this.expressionToElementsMap[expression];
             for (const element of elements) {
+              //TODO: Replace this special casing.
               if (element.localName === "input") {
                 element.setAttribute("value", value);
               } else {
@@ -176,7 +178,18 @@ class ZitElement extends HTMLElement {
       });
     }
 
-    elements.push(element);
+    references.push(attrName ? { element, attrName } : element);
+
+    const { localName } = element;
+    if (localName === "input" || localName === "textarea") {
+      element.addEventListener("input", (event) => {
+        this[propertyName] = event.target.value;
+      });
+    } else if (localName === "select") {
+      element.addEventListener("change", (event) => {
+        this[propertyName] = event.target.value;
+      });
+    }
   }
 
   wireEvents() {
