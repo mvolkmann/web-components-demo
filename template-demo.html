@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>HTML template demo</title>
+  </head>
+  <script>
+    window.onload = () => {
+      const template = document.getElementById('my-template');
+      //document.body.appendChild(template.content);
+      document.body.appendChild(template.content);
+      document.body.appendChild(template.content.cloneNode(true));
+      document.body.appendChild(template.content.cloneNode(true));
+      console.log('loaded');
+    }
+  </script>
+  <body>
+  <body>
+    <template id="my-template">
+      <h1>Can you see me?</h1>
+    </template>
+  </body>
+</html>

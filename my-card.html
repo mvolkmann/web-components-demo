@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Template Demo</title>
+    <script src="my-card.js"></script>
+  </head>
+  <body>
+    <h1>Template Demo</h1>
+
+    <template id="my-card">
+      <!-- This styling is only scoped when the
+           template is used in a web component. -->
+      <style>
+        .card {
+          display: inline-block;
+          background-color: cornflowerblue;
+          border: 3px solid blue;
+          border-radius: 0.5rem;
+          padding: 0.5rem;
+        }
+        h2 {
+          color: orange;
+          margin-top: 0;
+        }
+      </style>
+      <section class="card">
+        <h2><slot name="title">Untitled</slot></h2>
+        <h3><slot name="header" /></h3>
+        <p><slot name="body" /></p>
+        <h3><slot name="footer" /></h3>
+      </section>
+    </template>
+
+    <my-card>
+      <span slot="title">Title #1</span>
+      <span slot="header">header #1</span>
+      <span slot="body">body #1</span>
+      <span slot="footer">footer #1</span>
+    </my-card>
+
+    <my-card>
+      <span slot="title">Title #2</span>
+      <span slot="body">body #2</span>
+    </my-card>
+  </body>
+</html>
