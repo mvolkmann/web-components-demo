@@ -35,7 +35,7 @@ zitDemoTemplate.innerHTML = /*html*/ `
     <button id="decrement-btn" onClick="decrement">-</button>
     <span>$count</span>
     <button id="increment-btn" onClick="increment">+</button>
-    <span>$: count * factor</span>
+    <span id="factored">$: count * factor</span>
     <!--div>$: alert('hacked')</div-->
   </div>
 `;

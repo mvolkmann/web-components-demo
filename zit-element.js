@@ -17,7 +17,7 @@ class ZitElement extends HTMLElement {
   static identifierRE = /^[a-zA-Z_$][a-zA-Z0-9_$]*$/;
   static identifiersRE = /[a-zA-Z_$][a-zA-Z0-9_$]*/g;
 
-  expressionToElementsMap = {};
+  expressionReferencesMap = {};
   propertyReferencesMap = {};
 
   attributeChangedCallback(name, oldValue, newValue) {
@@ -31,6 +31,12 @@ class ZitElement extends HTMLElement {
 
   connectedCallback() {
     this.makeReactive();
+    console.log("propertyReferencesMap =", this.propertyReferencesMap);
+    console.log(
+      "propertyToExpressionsMap =",
+      ZitElement.propertyToExpressionsMap
+    );
+    console.log("expressionReferencesMap =", this.expressionReferencesMap);
     this.wireEvents();
   }
 
@@ -51,7 +57,6 @@ class ZitElement extends HTMLElement {
 
       // Evaluate the attributes of the element.
       const attrNames = element.getAttributeNames();
-      console.log("makeReactive: attrNames =", attrNames);
       for (const attrName of attrNames) {
         const attrValue = element.getAttribute(attrName);
 
@@ -97,31 +102,25 @@ class ZitElement extends HTMLElement {
 
   // Do not place untrusted expressions the text content of elements!
   registerExpression(expression, element, attrName) {
+    // Get all the identifiers in the expression.
     const identifiers = expression.match(ZitElement.identifiersRE);
+
     for (const identifier of identifiers) {
       let expressions = ZitElement.propertyToExpressionsMap[identifier];
       if (!expressions) {
         expressions = ZitElement.propertyToExpressionsMap[identifier] = [];
       }
       expressions.push(expression);
-
-      let elements = this.expressionToElementsMap[expression];
-      if (!elements) elements = this.expressionToElementsMap[expression] = [];
-      elements.push(element);
     }
 
-    setTimeout(() => {
-      element.textContent = evalInContext(expression, this);
-    }, 1000);
+    let references = this.expressionReferencesMap[expression];
+    if (!references) references = this.expressionReferencesMap[expression] = [];
+    references.push(attrName ? { element, attrName } : element);
+
+    element.textContent = evalInContext(expression, this);
   }
 
   registerPropertyReference(propertyName, element, attrName) {
-    console.log("registerPropertyReference:", {
-      propertyName,
-      element,
-      attrName,
-    });
-
     // Copy the property value to a new property with a leading underscore.
     // The property is replaced below with Object.defineProperty.
     this["_" + propertyName] = this[propertyName];
@@ -164,13 +163,13 @@ class ZitElement extends HTMLElement {
           const expressions = ZitElement.propertyToExpressionsMap[propertyName];
           for (const expression of expressions) {
             const value = evalInContext(expression, this);
-            const elements = this.expressionToElementsMap[expression];
-            for (const element of elements) {
-              //TODO: Replace this special casing.
-              if (element.localName === "input") {
-                element.setAttribute("value", value);
+            const references = this.expressionReferencesMap[expression];
+            for (const reference of references) {
+              if (reference instanceof Element) {
+                reference.textContent = value;
               } else {
-                element.textContent = value;
+                const { element, attrName } = reference;
+                element.setAttribute(attrName, value);
               }
             }
           }
