@@ -13,9 +13,9 @@ const toKebabCase = (str) =>
     .toLowerCase();
 
 class ZitElement extends HTMLElement {
+  static IDENTIFIER_RE = /[a-zA-Z_$][a-zA-Z0-9_$]*/g;
+  static ONLY_IDENTIFIER_RE = /^[a-zA-Z_$][a-zA-Z0-9_$]*$/;
   static propertyToExpressionsMap = {};
-  static identifierRE = /^[a-zA-Z_$][a-zA-Z0-9_$]*$/;
-  static identifiersRE = /[a-zA-Z_$][a-zA-Z0-9_$]*/g;
 
   expressionReferencesMap = {};
   propertyReferencesMap = {};
@@ -51,7 +51,7 @@ class ZitElement extends HTMLElement {
         this.registerExpression(expression, element, attrName);
       } else if (attrValue.startsWith("$")) {
         const propertyName = attrValue.slice(1).trim();
-        if (ZitElement.identifierRE.test(propertyName)) {
+        if (ZitElement.ONLY_IDENTIFIER_RE.test(propertyName)) {
           this.registerPropertyReference(propertyName, element, attrName);
           shouldObserve = true;
 
@@ -72,7 +72,7 @@ class ZitElement extends HTMLElement {
       this.registerExpression(expression, element);
     } else if (text.startsWith("$")) {
       const propertyName = text.slice(1).trim();
-      if (ZitElement.identifierRE.test(propertyName)) {
+      if (ZitElement.ONLY_IDENTIFIER_RE.test(propertyName)) {
         this.registerPropertyReference(propertyName, element);
       }
     }
@@ -115,7 +115,7 @@ class ZitElement extends HTMLElement {
   // Do not place untrusted expressions the text content of elements!
   registerExpression(expression, element, attrName) {
     // Get all the identifiers in the expression.
-    const identifiers = expression.match(ZitElement.identifiersRE);
+    const identifiers = expression.match(ZitElement.IDENTIFIER_RE);
 
     for (const identifier of identifiers) {
       let expressions = ZitElement.propertyToExpressionsMap[identifier];
