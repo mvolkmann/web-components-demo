@@ -5,8 +5,8 @@ class CounterShadowOpen extends HTMLElement {
 
   constructor() {
     super();
-    const root = this.attachShadow({ mode: "open" });
-    root.appendChild(counterTemplate.content.cloneNode(true));
+    this.attachShadow({ mode: "open" });
+    this.shadowRoot.appendChild(counterTemplate.content.cloneNode(true));
   }
 
   attributeChangedCallback(name, oldValue, newValue) {

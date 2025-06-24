@@ -3,6 +3,10 @@ import ZitElement from "./zit-element.js";
 const zitDemoTemplate = document.createElement("template");
 zitDemoTemplate.innerHTML = /*html*/ `
   <style>
+    :not(:defined) {
+      visibility: hidden;
+    }
+
     button {
       display: inline-flex;
       justify-content: center;
@@ -25,6 +29,11 @@ zitDemoTemplate.innerHTML = /*html*/ `
 
     div {
       font-size: 2rem;
+    }
+
+    label {
+      //color: inherit;
+      color: var(--zit-demo-label-color, purple);
     }
   </style>
   <div>
