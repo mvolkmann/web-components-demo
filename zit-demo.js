@@ -42,7 +42,7 @@ zitDemoTemplate.innerHTML = /*html*/ `
 class ZitDemo extends ZitElement {
   //TODO: Can you remove the need for this?
   static get observedAttributes() {
-    return ["count"];
+    return ["count", "factor"];
   }
 
   factor = 1;
@@ -58,6 +58,7 @@ class ZitDemo extends ZitElement {
     super.connectedCallback();
 
     this.count = this.getAttribute("count") || 0;
+    this.factor = this.getAttribute("factor") || 1;
   }
 
   decrement() {
