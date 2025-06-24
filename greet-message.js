@@ -1,7 +1,9 @@
 export class GreetMessage extends HTMLElement {
-  constructor() {
-    super();
+  static get observedAttributes() {
+    return ["name"];
+  }
 
+  connectedCallback() {
     //const name = this.getAttribute("name");
     //if (!name) throw new Error("name is a required attribute");
 
@@ -27,10 +29,6 @@ export class GreetMessage extends HTMLElement {
     // Approach #3
     this.attachShadow({ mode: "open" });
     this.render();
-  }
-
-  static get observedAttributes() {
-    return ["name"];
   }
 
   attributeChangedCallback(name, oldValue, newValue) {

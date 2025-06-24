@@ -2,8 +2,10 @@ class MyCard extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: "open" });
+  }
+
+  connectedCallback() {
     const template = document.getElementById("my-card");
-    // Passing true creates a deep clone.
     this.shadowRoot.appendChild(template.content.cloneNode(true));
   }
 }

@@ -40,61 +40,69 @@ class ZitElement extends HTMLElement {
     this.wireEvents();
   }
 
+  evaluateAttributes(element) {
+    let shouldObserve = false;
+
+    for (const attrName of element.getAttributeNames()) {
+      const attrValue = element.getAttribute(attrName);
+
+      if (attrValue.startsWith("$:")) {
+        const expression = attrValue.slice(2).trim();
+        this.registerExpression(expression, element, attrName);
+      } else if (attrValue.startsWith("$")) {
+        const propertyName = attrValue.slice(1).trim();
+        if (ZitElement.identifierRE.test(propertyName)) {
+          this.registerPropertyReference(propertyName, element, attrName);
+          shouldObserve = true;
+
+          // Change the value of the attribute from a property reference
+          // to the value of the referenced property.
+          element.setAttribute(attrName, this[propertyName]);
+        }
+      }
+    }
+
+    return shouldObserve;
+  }
+
+  evaluateText(element) {
+    const text = element.textContent.trim();
+    if (text.startsWith("$:")) {
+      const expression = text.slice(2).trim();
+      this.registerExpression(expression, element);
+    } else if (text.startsWith("$")) {
+      const propertyName = text.slice(1).trim();
+      if (ZitElement.identifierRE.test(propertyName)) {
+        this.registerPropertyReference(propertyName, element);
+      }
+    }
+  }
+
   makeReactive() {
     const elements = this.shadowRoot.querySelectorAll("*");
     for (const element of elements) {
-      // Evaluate the text content of the element.
-      const text = element.textContent.trim();
-      if (text.startsWith("$:")) {
-        const expression = text.slice(2).trim();
-        this.registerExpression(expression, element);
-      } else if (text.startsWith("$")) {
-        const propertyName = text.slice(1).trim();
-        if (ZitElement.identifierRE.test(propertyName)) {
-          this.registerPropertyReference(propertyName, element);
-        }
-      }
-
-      // Evaluate the attributes of the element.
-      let shouldObserve = false;
-      const attrNames = element.getAttributeNames();
-      for (const attrName of attrNames) {
-        const attrValue = element.getAttribute(attrName);
-
-        if (attrValue.startsWith("$:")) {
-          const expression = attrValue.slice(2).trim();
-          this.registerExpression(expression, element, attrName);
-        } else if (attrValue.startsWith("$")) {
-          const propertyName = attrValue.slice(1).trim();
-          if (ZitElement.identifierRE.test(propertyName)) {
-            this.registerPropertyReference(propertyName, element, attrName);
-            shouldObserve = true;
-
-            // Change the value of the attribute from a property reference
-            // to the value of the referenced property.
-            element.setAttribute(attrName, this[propertyName]);
-          }
-        }
-      }
-
-      if (shouldObserve) {
-        // Listen for attribute value changes and
-        // update the corresponding property if it exists.
-        const observer = new MutationObserver((mutations) => {
-          for (const mutation of mutations) {
-            if (mutation.type === "attributes") {
-              const { attributeName } = mutation;
-              if (this.hasOwnProperty(attributeName)) {
-                const oldValue = this[attributeName];
-                const newValue = element.getAttribute(attributeName);
-                if (newValue !== oldValue) this[attributeName] = newValue;
-              }
-            }
-          }
-        });
-        observer.observe(element, { attributes: true });
-      }
+      this.evaluateText(element);
+      const shouldObserve = this.evaluateAttributes(element);
+      if (shouldObserve) this.observeAttributes(element);
     }
+  }
+
+  // Listens for attribute value changes and
+  // update the corresponding property if it exists.
+  observeAttributes(element) {
+    const observer = new MutationObserver((mutations) => {
+      for (const mutation of mutations) {
+        if (mutation.type === "attributes") {
+          const { attributeName } = mutation;
+          if (this.hasOwnProperty(attributeName)) {
+            const oldValue = this[attributeName];
+            const newValue = element.getAttribute(attributeName);
+            if (newValue !== oldValue) this[attributeName] = newValue;
+          }
+        }
+      }
+    });
+    observer.observe(element, { attributes: true });
   }
 
   static register() {
