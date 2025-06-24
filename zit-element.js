@@ -56,6 +56,7 @@ class ZitElement extends HTMLElement {
       }
 
       // Evaluate the attributes of the element.
+      let shouldObserve = false;
       const attrNames = element.getAttributeNames();
       for (const attrName of attrNames) {
         const attrValue = element.getAttribute(attrName);
@@ -67,6 +68,7 @@ class ZitElement extends HTMLElement {
           const propertyName = attrValue.slice(1).trim();
           if (ZitElement.identifierRE.test(propertyName)) {
             this.registerPropertyReference(propertyName, element, attrName);
+            shouldObserve = true;
 
             // Change the value of the attribute from a property reference
             // to the value of the referenced property.
@@ -75,21 +77,23 @@ class ZitElement extends HTMLElement {
         }
       }
 
-      // Listen for attribute value changes and
-      // update the corresponding property if it exists.
-      const observer = new MutationObserver((mutations) => {
-        for (const mutation of mutations) {
-          if (mutation.type === "attributes") {
-            const { attributeName } = mutation;
-            if (this.hasOwnProperty(attributeName)) {
-              const oldValue = this[attributeName];
-              const newValue = element.getAttribute(attributeName);
-              if (newValue !== oldValue) this[attributeName] = newValue;
+      if (shouldObserve) {
+        // Listen for attribute value changes and
+        // update the corresponding property if it exists.
+        const observer = new MutationObserver((mutations) => {
+          for (const mutation of mutations) {
+            if (mutation.type === "attributes") {
+              const { attributeName } = mutation;
+              if (this.hasOwnProperty(attributeName)) {
+                const oldValue = this[attributeName];
+                const newValue = element.getAttribute(attributeName);
+                if (newValue !== oldValue) this[attributeName] = newValue;
+              }
             }
           }
-        }
-      });
-      observer.observe(element, { attributes: true });
+        });
+        observer.observe(element, { attributes: true });
+      }
     }
   }
 
