@@ -57,7 +57,7 @@ class CounterShadowOpen extends HTMLElement {
   }
 
   update() {
-    this.span.textContent = this.count;
+    if (this.span) this.span.textContent = this.count;
   }
 }
 

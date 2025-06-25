@@ -94,15 +94,8 @@ class CounterNoShadow extends HTMLElement {
     }
   }
 
-  /*************  ✨ Windsurf Command ⭐  *************/
-  /**
-   * Update the displayed count in the component.
-   *
-   * @protected
-   */
-  /*******  e78b5400-da8b-4ac1-9d45-aa71f479ae37  *******/
   update() {
-    this.span.textContent = this.count;
+    if (this.span) this.span.textContent = this.count;
   }
 }
 
