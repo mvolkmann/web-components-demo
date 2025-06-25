@@ -15,18 +15,19 @@ const toKebabCase = (str) =>
 class ZitElement extends HTMLElement {
   static IDENTIFIER_RE = /[a-zA-Z_$][a-zA-Z0-9_$]*/g;
   static ONLY_IDENTIFIER_RE = /^[a-zA-Z_$][a-zA-Z0-9_$]*$/;
+
+  static attributeTypeMap = new Map();
   static propertyToExpressionsMap = {};
   static template = document.createElement("template");
 
-  static attributeTypeMap = new Map();
-
   static get observedAttributes() {
-    if (this.hasOwnProperty("properties")) {
+    const atm = this.attributeTypeMap;
+    if (atm.size === 0 && this.hasOwnProperty("properties")) {
       for (const [name, type] of Object.entries(this.properties)) {
-        this.attributeTypeMap.set(name, type);
+        atm.set(name, type);
       }
     }
-    return [...this.attributeTypeMap.keys()];
+    return [...atm.keys()];
   }
 
   expressionReferencesMap = {};
