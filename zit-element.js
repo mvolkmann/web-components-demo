@@ -1,10 +1,3 @@
-const toKebabCase = (str) =>
-  str
-    // Insert a dash before each uppercase letter
-    // that is preceded by a lowercase letter or digit.
-    .replace(/([a-z0-9])([A-Z])/g, "$1-$2")
-    .toLowerCase();
-
 class ZitElement extends HTMLElement {
   static IDENTIFIER_RE = /[a-zA-Z_$][a-zA-Z0-9_$]*/g;
   static ONLY_IDENTIFIER_RE = /^[a-zA-Z_$][a-zA-Z0-9_$]*$/;
@@ -147,7 +140,7 @@ class ZitElement extends HTMLElement {
   }
 
   static register() {
-    const elementName = toKebabCase(this.name);
+    const elementName = ZitElement.toKebabCase(this.name);
     if (!customElements.get(elementName)) {
       customElements.define(elementName, this);
     }
@@ -256,6 +249,13 @@ class ZitElement extends HTMLElement {
       this[attrName] = this.getTypedAttribute(attrName);
     }
   }
+
+  static toKebabCase = (str) =>
+    str
+      // Insert a dash before each uppercase letter
+      // that is preceded by a lowercase letter or digit.
+      .replace(/([a-z0-9])([A-Z])/g, "$1-$2")
+      .toLowerCase();
 
   updateAttribute(element, attrName, value) {
     const currentValue = element.getAttribute(attrName);
