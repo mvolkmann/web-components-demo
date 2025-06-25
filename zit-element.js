@@ -1,10 +1,3 @@
-function evalInContext(expression, context) {
-  return Function(
-    ...Object.keys(context),
-    `return (${expression});`
-  )(...Object.values(context));
-}
-
 const toKebabCase = (str) =>
   str
     // Insert a dash before each uppercase letter
@@ -95,6 +88,13 @@ class ZitElement extends HTMLElement {
     return shouldObserve;
   }
 
+  static evaluateInContext(expression, context) {
+    return Function(
+      ...Object.keys(context),
+      `return (${expression});`
+    )(...Object.values(context));
+  }
+
   evaluateText(element) {
     const text = element.textContent.trim();
     if (text.startsWith("$:")) {
@@ -170,7 +170,7 @@ class ZitElement extends HTMLElement {
     if (!references) references = this.expressionReferencesMap[expression] = [];
     references.push(attrName ? { element, attrName } : element);
 
-    const value = evalInContext(expression, this);
+    const value = ZitElement.evaluateInContext(expression, this);
     if (attrName) {
       this.updateAttribute(element, attrName, value);
     } else {
@@ -221,7 +221,7 @@ class ZitElement extends HTMLElement {
           const expressions =
             ZitElement.propertyToExpressionsMap[propertyName] || [];
           for (const expression of expressions) {
-            const value = evalInContext(expression, this);
+            const value = ZitElement.evaluateInContext(expression, this);
             const references = this.expressionReferencesMap[expression];
             for (const reference of references) {
               if (reference instanceof Element) {
