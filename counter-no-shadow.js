@@ -34,19 +34,13 @@ class CounterNoShadow extends HTMLElement {
   connectedCallback() {
     this.appendChild(counterTemplate.content.cloneNode(true));
 
-    // This is a more direct approach to event handling
-    // that does not require the handleEvent method.
-    // this.querySelector("#decrement-btn").addEventListener("click", () => {
-    //   this.decrement();
-    // });
-    // this.querySelector("#increment-btn").addEventListener("click", () => {
-    //   this.increment();
-    // });
-
-    // This is an alternate approach to event handling
-    // that causes the handleEvent method to be called.
-    this.querySelector("#decrement-btn").addEventListener("click", this);
-    this.querySelector("#increment-btn").addEventListener("click", this);
+    this.decrementBtn = this.querySelector("#decrement-btn");
+    this.decrementBtn.addEventListener("click", () => {
+      this.decrement();
+    });
+    this.querySelector("#increment-btn").addEventListener("click", () => {
+      this.increment();
+    });
 
     this.span = this.querySelector("span");
     this.update();
@@ -65,12 +59,20 @@ class CounterNoShadow extends HTMLElement {
   decrement() {
     if (this.count > 0) {
       this.count--;
+      console.log("counter-no-shadow.js decrement: this.count =", this.count);
+      if (this.count === 0) {
+        console.log("counter-no-shadow.js decrement: disabled");
+        this.decrementBtn.setAttribute("disabled", "disabled");
+      } else {
+        console.log("counter-no-shadow.js decrement: not zero");
+      }
       this.update();
     }
   }
 
   increment() {
     this.count++;
+    this.decrementBtn.removeAttribute("disabled");
     this.update();
   }
 

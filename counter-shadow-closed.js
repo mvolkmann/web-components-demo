@@ -10,7 +10,6 @@ class CounterShadowClosed extends HTMLElement {
     // To access the DOM from inside this component,
     // we must capture the return value of the attachShadow method.
     this.root = this.attachShadow({ mode: "closed" });
-    this.root.appendChild(counterTemplate.content.cloneNode(true));
   }
 
   attributeChangedCallback(name, oldValue, newValue) {
@@ -21,6 +20,7 @@ class CounterShadowClosed extends HTMLElement {
   }
 
   connectedCallback() {
+    this.root.appendChild(counterTemplate.content.cloneNode(true));
     this.root.querySelector("#decrement-btn").addEventListener("click", () => {
       this.decrement();
     });

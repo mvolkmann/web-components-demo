@@ -6,7 +6,6 @@ class CounterShadowOpen extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: "open" });
-    this.shadowRoot.appendChild(counterTemplate.content.cloneNode(true));
   }
 
   attributeChangedCallback(name, oldValue, newValue) {
@@ -18,6 +17,8 @@ class CounterShadowOpen extends HTMLElement {
 
   connectedCallback() {
     const root = this.shadowRoot;
+    root.appendChild(counterTemplate.content.cloneNode(true));
+
     root.querySelector("#decrement-btn").addEventListener("click", () => {
       this.decrement();
     });
