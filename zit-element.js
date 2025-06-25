@@ -172,7 +172,8 @@ class ZitElement extends HTMLElement {
 
           // Update all the elements whose text content
           // is an expression that uses this property.
-          const expressions = ZitElement.propertyToExpressionsMap[propertyName];
+          const expressions =
+            ZitElement.propertyToExpressionsMap[propertyName] || [];
           for (const expression of expressions) {
             const value = evalInContext(expression, this);
             const references = this.expressionReferencesMap[expression];
