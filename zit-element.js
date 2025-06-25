@@ -26,17 +26,21 @@ class ZitElement extends HTMLElement {
       `zit-element: ${name} attribute changed from ${oldValue} to ${newValue}`
     );
     */
-    this[name] = newValue;
+    // Update the corresponding property.
+    const type = this.constructor.observedAttributeTypes[name];
+    this[name] = this.getTypedAttribute(name);
   }
 
   connectedCallback() {
     this.makeReactive();
+    /*
     console.log("propertyReferencesMap =", this.propertyReferencesMap);
     console.log(
       "propertyToExpressionsMap =",
       ZitElement.propertyToExpressionsMap
     );
     console.log("expressionReferencesMap =", this.expressionReferencesMap);
+    */
     this.wireEvents();
   }
 
@@ -57,7 +61,7 @@ class ZitElement extends HTMLElement {
 
           // Change the value of the attribute from a property reference
           // to the value of the referenced property.
-          element.setAttribute(attrName, this[propertyName]);
+          this.updateAttribute(element, attrName, this[propertyName]);
         }
       }
     }
@@ -76,6 +80,14 @@ class ZitElement extends HTMLElement {
         this.registerPropertyReference(propertyName, element);
       }
     }
+  }
+
+  getTypedAttribute(attrName) {
+    const value = this.getAttribute(attrName);
+    const type = this.constructor.observedAttributeTypes[attrName];
+    if (type === "number") return Number(value);
+    if (type === "boolean") return Boolean(value);
+    return value;
   }
 
   makeReactive() {
@@ -129,7 +141,12 @@ class ZitElement extends HTMLElement {
     if (!references) references = this.expressionReferencesMap[expression] = [];
     references.push(attrName ? { element, attrName } : element);
 
-    element.textContent = evalInContext(expression, this);
+    const value = evalInContext(expression, this);
+    if (attrName) {
+      this.updateAttribute(element, attrName, value);
+    } else {
+      element.textContent = value;
+    }
   }
 
   registerPropertyReference(propertyName, element, attrName) {
@@ -155,8 +172,8 @@ class ZitElement extends HTMLElement {
           // If the property name matches an attribute on the custom element,
           // update that attribute.
           if (this.hasAttribute(propertyName)) {
-            const oldAttr = this.getAttribute(propertyName);
-            if (value !== oldAttr) this.setAttribute(propertyName, value);
+            const oldValue = this.getTypedAttribute(propertyName);
+            if (value !== oldValue) this.setAttribute(propertyName, value);
           }
 
           // Update all the references to this property.
@@ -165,8 +182,8 @@ class ZitElement extends HTMLElement {
               element.textContent = value;
             } else {
               const { element, attrName } = reference;
-              element.value = value; // updates displayed value
-              element.setAttribute(attrName, value); // updates attribute in DOM
+              if (attrName === "value") element.value = value; // updates displayed value
+              this.updateAttribute(element, attrName, value); // updates attribute in DOM
             }
           }
 
@@ -182,7 +199,7 @@ class ZitElement extends HTMLElement {
                 reference.textContent = value;
               } else {
                 const { element, attrName } = reference;
-                element.setAttribute(attrName, value);
+                this.updateAttribute(element, attrName, value);
               }
             }
           }
@@ -201,6 +218,21 @@ class ZitElement extends HTMLElement {
       element.addEventListener("change", (event) => {
         this[propertyName] = event.target.value;
       });
+    }
+  }
+
+  updateAttribute(element, attrName, value) {
+    const currentValue = element.getAttribute(attrName);
+    if (typeof value === "boolean") {
+      if (value) {
+        if (currentValue !== attrName) {
+          element.setAttribute(attrName, attrName);
+        }
+      } else {
+        if (currentValue) element.removeAttribute(attrName);
+      }
+    } else if (currentValue !== value) {
+      element.setAttribute(attrName, value);
     }
   }
 

@@ -9,9 +9,6 @@ class CounterShadowOpen extends HTMLElement {
   }
 
   attributeChangedCallback(name, oldValue, newValue) {
-    console.log(
-      `counter-shadow-open: ${name} attribute changed from ${oldValue} to ${newValue}`
-    );
     if (this.isConnected) this.update();
   }
 

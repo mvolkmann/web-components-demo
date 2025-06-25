@@ -18,17 +18,20 @@ counterZitTemplate.innerHTML = /*html*/ `
     }
   </style>
   <div>
-    <button onclick="decrement">-</button>
+    <button disabled="$: count === 0" onclick="decrement">-</button>
     <span>$count</span>
     <button onclick="increment">+</button>
   </div>
 `;
-//<button disabled="$: count === 0" onclick="decrement">-</button>
 
 class CounterZit extends ZitElement {
   static get observedAttributes() {
     return ["count"];
   }
+
+  static observedAttributeTypes = {
+    count: "number",
+  };
 
   constructor() {
     super();
