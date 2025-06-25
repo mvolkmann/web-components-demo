@@ -11,26 +11,24 @@ class CounterZit extends ZitElement {
   };
 
   static css() {
-    return /*html*/ `
-      <style>
-        :not(:defined) {
-          visibility: hidden;
-        }
+    return /*css*/ `
+      :not(:defined) {
+        visibility: hidden;
+      }
 
-        .counter {
-          display: flex;
-          align-items: center;
-          gap: 0.5rem;
-        }
+      .counter {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
 
-        button {
-          background-color: lightgreen;
-        }
+      button {
+        background-color: lightgreen;
+      }
 
-        button:disabled {
-          background-color: gray;
-        }
-      </style>
+      button:disabled {
+        background-color: gray;
+      }
     `;
   }
 
