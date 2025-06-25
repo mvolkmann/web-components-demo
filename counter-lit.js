@@ -14,28 +14,18 @@ class CounterLit extends LitElement {
   };
 
   static styles = css`
-    button {
-      display: inline-flex;
-      justify-content: center;
+    .counter {
+      display: flex;
       align-items: center;
-
-      aspect-ratio: 1;
-      border-radius: 50%;
-      color: white;
-      font-size: inherit;
-      height: 2.5rem;
+      gap: 0.5rem;
     }
 
-    #decrement-btn {
-      background-color: red;
+    button {
+      background-color: lightgreen;
     }
 
-    #increment-btn {
-      background-color: green;
-    }
-
-    div {
-      font-size: 2rem;
+    button:disabled {
+      background-color: gray;
     }
   `;
 
@@ -60,7 +50,13 @@ class CounterLit extends LitElement {
         }}
         >-</button>
         -->
-        <button id="decrement-btn" @click=${this.decrement}>-</button>
+        <button
+          id="decrement-btn"
+          ?disabled=${this.count === 0}
+          @click=${this.decrement}
+        >
+          -
+        </button>
         <span>${this.count}</span>
         <button id="increment-btn" @click=${() => this.count++}>+</button>
       </div>

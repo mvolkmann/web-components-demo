@@ -19,7 +19,8 @@ class CounterShadowOpen extends HTMLElement {
     const root = this.shadowRoot;
     root.appendChild(counterTemplate.content.cloneNode(true));
 
-    root.querySelector("#decrement-btn").addEventListener("click", () => {
+    this.decrementBtn = root.querySelector("#decrement-btn");
+    this.decrementBtn.addEventListener("click", () => {
       this.decrement();
     });
     root.querySelector("#increment-btn").addEventListener("click", () => {
@@ -41,14 +42,20 @@ class CounterShadowOpen extends HTMLElement {
   }
 
   decrement() {
-    if (this.count > 0) {
-      this.count--;
-      this.update();
+    if (this.count === 0) return;
+
+    this.count--;
+    // this.count gets converted to a string,
+    // so we have to use == instead of === on the next line.
+    if (this.count == 0) {
+      this.decrementBtn.setAttribute("disabled", "disabled");
     }
+    this.update();
   }
 
   increment() {
     this.count++;
+    this.decrementBtn.removeAttribute("disabled");
     this.update();
   }
 

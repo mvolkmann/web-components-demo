@@ -17,7 +17,7 @@ counterTemplate.innerHTML = /*html*/ `
   </style>
   <div>
     <button id="decrement-btn">-</button>
-    <span>${this.count}</span>
+    <span part="count">${this.count}</span>
     <button id="increment-btn">+</button>
   </div>
 `;
