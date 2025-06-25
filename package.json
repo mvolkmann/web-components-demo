@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "description": "This demonstrates several approaches to implementing web components.",
   "scripts": {
-    "dev": "http-server ."
+    "dev": "http-server .",
+    "minify": "terser zit-element.js -c -m -o zit-element.min.js",
+    "zip": "gzip -k zit-element.min.js"
   },
   "repository": {
     "type": "git",
@@ -11,7 +13,8 @@
   },
   "author": "R. Mark Volkmann",
   "license": "MIT",
-  "dependencies": {
-    "http-server": "^14.1.1"
+  "devDependencies": {
+    "http-server": "^14.1.1",
+    "terser": "^5.43.1"
   }
 }

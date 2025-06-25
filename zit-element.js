@@ -26,16 +26,14 @@ class ZitElement extends HTMLElement {
     this.attachShadow({ mode: "open" });
   }
 
-  attributeChangedCallback(name, oldValue, newValue) {
+  attributeChangedCallback(attrName, oldValue, newValue) {
     /*
     console.log(
       `zit-element: ${name} attribute changed from ${oldValue} to ${newValue}`
     );
     */
     // Update the corresponding property.
-    const type = this.constructor.observedAttributeTypes[name];
-    //TODO: Doesn't this need to use newValue?
-    this[name] = this.getTypedAttribute(name);
+    this[attrName] = this.getTypedValue(attrName, newValue);
   }
 
   connectedCallback() {
@@ -92,11 +90,14 @@ class ZitElement extends HTMLElement {
   }
 
   getTypedAttribute(attrName) {
-    const value = this.getAttribute(attrName);
+    return this.getTypedValue(attrName, this.getAttribute(attrName));
+  }
+
+  getTypedValue(attrName, stringValue) {
     const type = this.constructor.observedAttributeTypes[attrName];
-    if (type === "number") return Number(value);
-    if (type === "boolean") return Boolean(value);
-    return value;
+    if (type === "number") return Number(stringValue);
+    if (type === "boolean") return Boolean(stringValue);
+    return stringValue;
   }
 
   makeReactive() {
