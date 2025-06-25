@@ -18,6 +18,17 @@ class ZitElement extends HTMLElement {
   static propertyToExpressionsMap = {};
   static template = document.createElement("template");
 
+  static attributeTypeMap = new Map();
+
+  static get observedAttributes() {
+    if (this.hasOwnProperty("properties")) {
+      for (const [name, type] of Object.entries(this.properties)) {
+        this.attributeTypeMap.set(name, type);
+      }
+    }
+    return [...this.attributeTypeMap.keys()];
+  }
+
   expressionReferencesMap = {};
   propertyReferencesMap = {};
 
@@ -101,7 +112,7 @@ class ZitElement extends HTMLElement {
   }
 
   getTypedValue(attrName, stringValue) {
-    const type = this.constructor.observedAttributeTypes[attrName];
+    const type = ZitElement.attributeTypeMap.get(attrName);
     if (type === "number") return Number(stringValue);
     if (type === "boolean") return Boolean(stringValue);
     return stringValue;
