@@ -12,14 +12,17 @@
         color: black;
       }
 
-      /*
-      zit-demo {
-        color: green;
+      /* This only works for web components that use a shadow DOM. */
+      counter-shadow-open::part(count),
+      counter-shadow-closed::part(count) {
+        color: blue;
       }
-      */
 
-      /* zit-demo { */
-      :root {
+      zit-demo {
+        color: green; /* can inherit inside web component */
+      }
+
+      zit-demo {
         --zit-demo-label-color: red;
       }
     </style>
