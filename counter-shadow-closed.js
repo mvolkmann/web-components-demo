@@ -17,7 +17,7 @@ class CounterShadowClosed extends HTMLElement {
   }
 
   connectedCallback() {
-    this.root.appendChild(counterTemplate.content.cloneNode(true));
+    this.root.appendChild(CounterNoShadow.template.content.cloneNode(true));
 
     this.decrementBtn = this.root.querySelector("#decrement-btn");
     this.decrementBtn.addEventListener("click", () => {

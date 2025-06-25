@@ -1,42 +1,48 @@
-const counterTemplate = document.createElement("template");
-counterTemplate.innerHTML = /*html*/ `
-  <style>
-    :not(:defined) {
-      visibility: hidden;
-    }
-
-    .counter {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    button {
-      background-color: lightgreen;
-    }
-
-    button:disabled {
-      background-color: gray;
-    }
-  </style>
-  <div>
-    <button id="decrement-btn">-</button>
-    <span part="count">${this.count}</span>
-    <button id="increment-btn">+</button>
-  </div>
-`;
-
 class CounterNoShadow extends HTMLElement {
+  static template;
+
   static get observedAttributes() {
     return ["count"];
   }
 
+  constructor() {
+    super();
+    CounterNoShadow.template = document.createElement("template");
+  }
   attributeChangedCallback(name, oldValue, newValue) {
     if (this.isConnected) this.update();
   }
 
   connectedCallback() {
-    this.appendChild(counterTemplate.content.cloneNode(true));
+    const { template } = CounterNoShadow;
+    template.innerHTML = /*html*/ `
+      <style>
+        :not(:defined) {
+          visibility: hidden;
+        }
+
+        .counter {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+        }
+
+        button {
+          background-color: lightgreen;
+        }
+
+        button:disabled {
+          background-color: gray;
+        }
+      </style>
+      <div>
+        <button id="decrement-btn">-</button>
+        <span part="count">${this.count}</span>
+        <button id="increment-btn">+</button>
+      </div>
+    `;
+
+    this.appendChild(template.content.cloneNode(true));
 
     this.decrementBtn = this.querySelector("#decrement-btn");
     this.decrementBtn.addEventListener("click", () => {
@@ -87,6 +93,13 @@ class CounterNoShadow extends HTMLElement {
     }
   }
 
+  /*************  ✨ Windsurf Command ⭐  *************/
+  /**
+   * Update the displayed count in the component.
+   *
+   * @protected
+   */
+  /*******  e78b5400-da8b-4ac1-9d45-aa71f479ae37  *******/
   update() {
     this.span.textContent = this.count;
   }
