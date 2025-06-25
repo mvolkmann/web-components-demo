@@ -57,17 +57,15 @@ class CounterNoShadow extends HTMLElement {
   }
 
   decrement() {
-    if (this.count > 0) {
-      this.count--;
-      console.log("counter-no-shadow.js decrement: this.count =", this.count);
-      if (this.count === 0) {
-        console.log("counter-no-shadow.js decrement: disabled");
-        this.decrementBtn.setAttribute("disabled", "disabled");
-      } else {
-        console.log("counter-no-shadow.js decrement: not zero");
-      }
-      this.update();
+    if (this.count === 0) return;
+
+    this.count--;
+    // this.count gets converted to a string,
+    // so we have to use == instead of === on the next line.
+    if (this.count == 0) {
+      this.decrementBtn.setAttribute("disabled", "disabled");
     }
+    this.update();
   }
 
   increment() {
