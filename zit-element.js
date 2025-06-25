@@ -16,6 +16,7 @@ class ZitElement extends HTMLElement {
   static IDENTIFIER_RE = /[a-zA-Z_$][a-zA-Z0-9_$]*/g;
   static ONLY_IDENTIFIER_RE = /^[a-zA-Z_$][a-zA-Z0-9_$]*$/;
   static propertyToExpressionsMap = {};
+  static template = document.createElement("template");
 
   expressionReferencesMap = {};
   propertyReferencesMap = {};
@@ -33,12 +34,15 @@ class ZitElement extends HTMLElement {
     */
     // Update the corresponding property.
     const type = this.constructor.observedAttributeTypes[name];
+    //TODO: Doesn't this need to use newValue?
     this[name] = this.getTypedAttribute(name);
   }
 
   connectedCallback() {
+    this.shadowRoot.appendChild(ZitElement.template.content.cloneNode(true));
     this.wireEvents();
     this.makeReactive();
+    this.setObservedProperties(); // must be called after makeReactive
     /*
     console.log("propertyReferencesMap =", this.propertyReferencesMap);
     console.log(
@@ -223,6 +227,13 @@ class ZitElement extends HTMLElement {
       element.addEventListener("change", (event) => {
         this[propertyName] = event.target.value;
       });
+    }
+  }
+
+  // Sets the corresponding property for each observed attribute.
+  setObservedProperties() {
+    for (const attrName of this.constructor.observedAttributes) {
+      this[attrName] = this.getTypedAttribute(attrName);
     }
   }
 
