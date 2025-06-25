@@ -25,11 +25,6 @@ class ZitElement extends HTMLElement {
   }
 
   attributeChangedCallback(attrName, _, newValue) {
-    /*
-    console.log(
-      `zit-element: ${name} attribute changed from ${oldValue} to ${newValue}`
-    );
-    */
     // Update the corresponding property.
     this[attrName] = this.getTypedValue(attrName, newValue);
   }
@@ -46,14 +41,6 @@ class ZitElement extends HTMLElement {
     this.wireEvents();
     this.makeReactive();
     this.setObservedProperties(); // must be called after makeReactive
-    /*
-    console.log("propertyReferencesMap =", this.propertyReferencesMap);
-    console.log(
-      "propertyToExpressionsMap =",
-      ZitElement.propertyToExpressionsMap
-    );
-    console.log("expressionReferencesMap =", this.expressionReferencesMap);
-    */
   }
 
   evaluateAttributes(element) {
@@ -146,7 +133,8 @@ class ZitElement extends HTMLElement {
     }
   }
 
-  // Do not place untrusted expressions the text content of elements!
+  // Do not place untrusted expressions in
+  // attribute values or the text content of elements!
   registerExpression(expression, element, attrName) {
     // Get all the identifiers in the expression.
     const identifiers = expression.match(ZitElement.IDENTIFIER_RE);
@@ -204,8 +192,10 @@ class ZitElement extends HTMLElement {
               element.textContent = value;
             } else {
               const { element, attrName } = reference;
-              if (attrName === "value") element.value = value; // updates displayed value
-              this.updateAttribute(element, attrName, value); // updates attribute in DOM
+              // This is necessary for input, textarea, and select elements
+              // to trigger the browser to display the new value.
+              if (attrName === "value") element.value = value;
+              this.updateAttribute(element, attrName, value);
             }
           }
 
