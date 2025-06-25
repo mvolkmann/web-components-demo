@@ -1,8 +1,14 @@
 import ZitElement from "./zit-element.js";
 
 const counterZitTemplate = document.createElement("template");
+// The html comment preceding the template literal signals to the
+// es6-string-html extension that it should provide syntax highlighting.
 counterZitTemplate.innerHTML = /*html*/ `
   <style>
+    :not(:defined) {
+      visibility: hidden;
+    }
+
     .counter {
       display: flex;
       align-items: center;
@@ -33,13 +39,8 @@ class CounterZit extends ZitElement {
     count: "number",
   };
 
-  constructor() {
-    super();
-    const root = this.attachShadow({ mode: "open" });
-    root.appendChild(counterZitTemplate.content.cloneNode(true));
-  }
-
   connectedCallback() {
+    this.shadowRoot.appendChild(counterZitTemplate.content.cloneNode(true));
     super.connectedCallback();
     this.count = this.getAttribute("count") || 0;
   }

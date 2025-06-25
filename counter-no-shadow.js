@@ -1,6 +1,10 @@
 const counterTemplate = document.createElement("template");
 counterTemplate.innerHTML = /*html*/ `
   <style>
+    :not(:defined) {
+      visibility: hidden;
+    }
+
     .counter {
       display: flex;
       align-items: center;

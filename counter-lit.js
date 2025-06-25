@@ -7,13 +7,11 @@ import {
 } from "https://cdn.jsdelivr.net/gh/lit/dist@2/core/lit-core.min.js";
 
 class CounterLit extends LitElement {
-  static properties = {
-    // Setting reflect to true keeps the count attribute
-    // in sync with the count property.
-    count: { type: Number, reflect: true },
-  };
-
   static styles = css`
+    :not(:defined) {
+      visibility: hidden;
+    }
+
     .counter {
       display: flex;
       align-items: center;
@@ -29,11 +27,11 @@ class CounterLit extends LitElement {
     }
   `;
 
-  /* Since we don't need to do anything in this constructor, it can be omitted. 
-  constructor() {
-    super();
-  }
-  */
+  static properties = {
+    // Setting reflect to true keeps the count attribute
+    // in sync with the count property.
+    count: { type: Number, reflect: true },
+  };
 
   decrement() {
     if (this.count > 0) this.count--;

@@ -20,6 +20,11 @@ class ZitElement extends HTMLElement {
   expressionReferencesMap = {};
   propertyReferencesMap = {};
 
+  constructor() {
+    super();
+    this.attachShadow({ mode: "open" });
+  }
+
   attributeChangedCallback(name, oldValue, newValue) {
     /*
     console.log(
@@ -32,6 +37,7 @@ class ZitElement extends HTMLElement {
   }
 
   connectedCallback() {
+    this.wireEvents();
     this.makeReactive();
     /*
     console.log("propertyReferencesMap =", this.propertyReferencesMap);
@@ -41,7 +47,6 @@ class ZitElement extends HTMLElement {
     );
     console.log("expressionReferencesMap =", this.expressionReferencesMap);
     */
-    this.wireEvents();
   }
 
   evaluateAttributes(element) {
