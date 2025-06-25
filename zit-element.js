@@ -26,7 +26,7 @@ class ZitElement extends HTMLElement {
     this.attachShadow({ mode: "open" });
   }
 
-  attributeChangedCallback(attrName, oldValue, newValue) {
+  attributeChangedCallback(attrName, _, newValue) {
     /*
     console.log(
       `zit-element: ${name} attribute changed from ${oldValue} to ${newValue}`
@@ -38,7 +38,10 @@ class ZitElement extends HTMLElement {
 
   connectedCallback() {
     if (!ZitElement.template.innerHTML) {
-      ZitElement.template.innerHTML = this.html();
+      ZitElement.template.innerHTML = `
+      <style>${this.constructor.css()}</style>
+      ${this.constructor.html()}
+      `;
     }
 
     this.shadowRoot.appendChild(ZitElement.template.content.cloneNode(true));

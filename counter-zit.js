@@ -10,7 +10,7 @@ class CounterZit extends ZitElement {
     count: "number",
   };
 
-  html() {
+  static css() {
     return /*html*/ `
       <style>
         :not(:defined) {
@@ -31,6 +31,11 @@ class CounterZit extends ZitElement {
           background-color: gray;
         }
       </style>
+    `;
+  }
+
+  static html() {
+    return /*html*/ `
       <div>
         <button disabled="$: count === 0" onclick="decrement">-</button>
         <span>$count</span>
