@@ -10,15 +10,8 @@ class CounterZit extends ZitElement {
     count: "number",
   };
 
-  constructor() {
-    super();
-
-    const { template } = CounterZit;
-    if (template.innerHTML) return;
-
-    // The html comment preceding the template literal signals to the
-    // es6-string-html extension that it should provide syntax highlighting.
-    template.innerHTML = /*html*/ `
+  html() {
+    return /*html*/ `
       <style>
         :not(:defined) {
           visibility: hidden;

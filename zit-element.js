@@ -37,6 +37,10 @@ class ZitElement extends HTMLElement {
   }
 
   connectedCallback() {
+    if (!ZitElement.template.innerHTML) {
+      ZitElement.template.innerHTML = this.html();
+    }
+
     this.shadowRoot.appendChild(ZitElement.template.content.cloneNode(true));
     this.wireEvents();
     this.makeReactive();
