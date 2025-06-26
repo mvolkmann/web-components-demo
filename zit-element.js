@@ -35,29 +35,7 @@ class ZitElement extends HTMLElement {
   }
 
   connectedCallback() {
-    if (!ZitElement.template.innerHTML) {
-      ZitElement.template.innerHTML = `
-      <style>${this.constructor.css()}</style>
-      ${this.constructor.html()}
-      `;
-    }
-
-    this.shadowRoot.appendChild(ZitElement.template.content.cloneNode(true));
-    this.wireEvents();
-    this.makeReactive();
-    this.setObservedProperties(); // must be called after makeReactive
-    console.log(
-      "zit-element: propertyReferencesMap =",
-      this.propertyReferencesMap
-    );
-    console.log(
-      "zit-element: propertyToExpressionsMap =",
-      ZitElement.propertyToExpressionsMap
-    );
-    console.log(
-      "zit-element: expressionReferencesMap =",
-      this.expressionReferencesMap
-    );
+    this.render(true);
   }
 
   evaluateAttributes(element) {
@@ -205,9 +183,11 @@ class ZitElement extends HTMLElement {
         },
         set(value) {
           const oldValue = this["_" + propertyName];
+          if (value === oldValue) return;
           this["_" + propertyName] = value;
 
-          // If the property name matches an attribute on the custom element,
+          // If the property name is configured to "reflect" and
+          // there is a matching attribute on the custom element,
           // update that attribute.
           const options = ZitElement.attributeTypeMap.get(propertyName);
           if (options.reflect && this.hasAttribute(propertyName)) {
@@ -217,32 +197,36 @@ class ZitElement extends HTMLElement {
             }
           }
 
-          // Update all the references to this property.
-          for (const reference of references) {
-            if (reference instanceof Element) {
-              element.textContent = value;
-            } else {
-              const { element, attrName } = reference;
-              // This is necessary for input, textarea, and select elements
-              // to trigger the browser to display the new value.
-              if (attrName === "value") element.value = value;
-              this.updateAttribute(element, attrName, value);
-            }
-          }
-
-          // Update all the elements whose text content
-          // is an expression that uses this property.
-          const expressions =
-            ZitElement.propertyToExpressionsMap.get(propertyName) || [];
-          for (const expression of expressions) {
-            const value = ZitElement.evaluateInContext(expression, this);
-            const references = this.expressionReferencesMap.get(expression);
+          if (options.render) {
+            this.render(false);
+          } else if (options.react) {
+            // Update all the references to this property.
             for (const reference of references) {
               if (reference instanceof Element) {
-                reference.textContent = value;
+                element.textContent = value;
               } else {
                 const { element, attrName } = reference;
+                // This is necessary for input, textarea, and select elements
+                // to trigger the browser to display the new value.
+                if (attrName === "value") element.value = value;
                 this.updateAttribute(element, attrName, value);
+              }
+            }
+
+            // Update all the elements whose text content
+            // is an expression that uses this property.
+            const expressions =
+              ZitElement.propertyToExpressionsMap.get(propertyName) || [];
+            for (const expression of expressions) {
+              const value = ZitElement.evaluateInContext(expression, this);
+              const references = this.expressionReferencesMap.get(expression);
+              for (const reference of references) {
+                if (reference instanceof Element) {
+                  reference.textContent = value;
+                } else {
+                  const { element, attrName } = reference;
+                  this.updateAttribute(element, attrName, value);
+                }
               }
             }
           }
@@ -262,6 +246,44 @@ class ZitElement extends HTMLElement {
         this[propertyName] = event.target.value;
       });
     }
+
+    const value = this[propertyName];
+    if (attrName) {
+      this.updateAttribute(element, attrName, value);
+    } else {
+      element.textContent = value;
+    }
+  }
+
+  render(firstCall) {
+    if (!ZitElement.template.innerHTML) {
+      ZitElement.template.innerHTML = `
+      <style>${this.constructor.css()}</style>
+      ${this.constructor.html()}
+      `;
+    }
+
+    this.shadowRoot.replaceChildren(
+      ZitElement.template.content.cloneNode(true)
+    );
+    this.wireEvents();
+    this.makeReactive();
+    if (firstCall) this.setObservedProperties(); // must be called after makeReactive
+
+    /*
+    console.log(
+      "zit-element: propertyReferencesMap =",
+      this.propertyReferencesMap
+    );
+    console.log(
+      "zit-element: propertyToExpressionsMap =",
+      ZitElement.propertyToExpressionsMap
+    );
+    console.log(
+      "zit-element: expressionReferencesMap =",
+      this.expressionReferencesMap
+    );
+    */
   }
 
   // Sets the corresponding property for each observed attribute.
