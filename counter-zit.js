@@ -4,6 +4,11 @@ import ZitElement from "./zit-element.js";
 class CounterZit extends ZitElement {
   static properties = { count: "number" };
 
+  zero = 0;
+  nothing() {
+    return 0;
+  }
+
   static css() {
     return /*css*/ `
       :not(:defined) {
@@ -27,9 +32,15 @@ class CounterZit extends ZitElement {
   }
 
   static html() {
+    //TODO: Can an expression refer to global variables?
+    //TODO: Can an expression call global functions?
     return /*html*/ `
       <div>
-        <button disabled="$: count === 0" onclick="decrement">-</button>
+        <button disabled="$: this.count === 0" onclick="decrement">-</button>
+        <!--
+        <button disabled="$: this.count === this.zero" onclick="decrement">-</button>
+        <button disabled="$: this.count === this.nothing()" onclick="decrement">-</button>
+        -->
         <span>$count</span>
         <button onclick="increment">+</button>
       </div>
@@ -42,6 +53,10 @@ class CounterZit extends ZitElement {
 
   increment() {
     this.count++;
+  }
+
+  zero() {
+    return 0;
   }
 }
 

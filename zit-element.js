@@ -1,7 +1,11 @@
 class ZitElement extends HTMLElement {
-  static commonRE = "[a-zA-Z_$][a-zA-Z0-9_$]*";
-  static IDENTIFIER_RE = new RegExp(this.commonRE, "g");
-  static ONLY_IDENTIFIER_RE = new RegExp(`${this.commonRE}$`);
+  // This uses a negative lookahead to match an identifier
+  // that is not immediately followed by a left parenthesis.
+  static FIRST_CHAR = "a-zA-Z_$";
+  static NOT_FIRST_CHAR = "a-zA-Z0-9_$";
+  static COMMON_RE = `[${this.FIRST_CHAR}][${this.NOT_FIRST_CHAR}]*(?![${this.NOT_FIRST_CHAR}\\(])`;
+  static IDENTIFIER_RE = new RegExp(this.COMMON_RE, "g");
+  static ONLY_IDENTIFIER_RE = new RegExp(`${this.COMMON_RE}$`);
 
   static attributeTypeMap = new Map();
   static propertyToExpressionsMap = new Map();
@@ -42,6 +46,18 @@ class ZitElement extends HTMLElement {
     this.wireEvents();
     this.makeReactive();
     this.setObservedProperties(); // must be called after makeReactive
+    console.log(
+      "zit-element: propertyReferencesMap =",
+      this.propertyReferencesMap
+    );
+    console.log(
+      "zit-element: propertyToExpressionsMap =",
+      ZitElement.propertyToExpressionsMap
+    );
+    console.log(
+      "zit-element: expressionReferencesMap =",
+      this.expressionReferencesMap
+    );
   }
 
   evaluateAttributes(element) {
@@ -70,10 +86,15 @@ class ZitElement extends HTMLElement {
   }
 
   static evaluateInContext(expression, context) {
+    /*
     return Function(
       ...Object.keys(context),
       `return (${expression});`
     )(...Object.values(context));
+    */
+    return function () {
+      return eval(expression);
+    }.call(context);
   }
 
   evaluateText(element) {
