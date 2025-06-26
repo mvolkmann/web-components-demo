@@ -3,7 +3,7 @@ class ZitElement extends HTMLElement {
   static ONLY_IDENTIFIER_RE = /^[a-zA-Z_$][a-zA-Z0-9_$]*$/;
 
   static attributeTypeMap = new Map();
-  static propertyToExpressionsMap = {};
+  static propertyToExpressionsMap = new Map();
   static template = document.createElement("template");
 
   static get observedAttributes() {
@@ -16,8 +16,8 @@ class ZitElement extends HTMLElement {
     return [...atm.keys()];
   }
 
-  expressionReferencesMap = {};
-  propertyReferencesMap = {};
+  expressionReferencesMap = new Map();
+  propertyReferencesMap = new Map();
 
   constructor() {
     super();
@@ -140,15 +140,19 @@ class ZitElement extends HTMLElement {
     const identifiers = expression.match(ZitElement.IDENTIFIER_RE);
 
     for (const identifier of identifiers) {
-      let expressions = ZitElement.propertyToExpressionsMap[identifier];
+      let expressions = ZitElement.propertyToExpressionsMap.get(identifier);
       if (!expressions) {
-        expressions = ZitElement.propertyToExpressionsMap[identifier] = [];
+        expressions = [];
+        ZitElement.propertyToExpressionsMap.set(identifier, expressions);
       }
       expressions.push(expression);
     }
 
-    let references = this.expressionReferencesMap[expression];
-    if (!references) references = this.expressionReferencesMap[expression] = [];
+    let references = this.expressionReferencesMap.get(expression);
+    if (!references) {
+      references = [];
+      this.expressionReferencesMap.set(expression, references);
+    }
     references.push(attrName ? { element, attrName } : element);
 
     const value = ZitElement.evaluateInContext(expression, this);
@@ -164,12 +168,13 @@ class ZitElement extends HTMLElement {
     // The property is replaced below with Object.defineProperty.
     this["_" + propertyName] = this[propertyName];
 
-    let references = this.propertyReferencesMap[propertyName];
+    let references = this.propertyReferencesMap.get(propertyName);
 
     // We only want to do this once for each property,
     // not once for each element that uses the property.
     if (!references) {
-      references = this.propertyReferencesMap[propertyName] = [];
+      references = [];
+      this.propertyReferencesMap.set(propertyName, references);
 
       Object.defineProperty(this, propertyName, {
         get() {
@@ -202,10 +207,10 @@ class ZitElement extends HTMLElement {
           // Update all the elements whose text content
           // is an expression that uses this property.
           const expressions =
-            ZitElement.propertyToExpressionsMap[propertyName] || [];
+            ZitElement.propertyToExpressionsMap.get(propertyName) || [];
           for (const expression of expressions) {
             const value = ZitElement.evaluateInContext(expression, this);
-            const references = this.expressionReferencesMap[expression];
+            const references = this.expressionReferencesMap.get(expression);
             for (const reference of references) {
               if (reference instanceof Element) {
                 reference.textContent = value;
