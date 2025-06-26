@@ -1,6 +1,7 @@
 class ZitElement extends HTMLElement {
-  static IDENTIFIER_RE = /[a-zA-Z_$][a-zA-Z0-9_$]*/g;
-  static ONLY_IDENTIFIER_RE = /^[a-zA-Z_$][a-zA-Z0-9_$]*$/;
+  static commonRE = "[a-zA-Z_$][a-zA-Z0-9_$]*";
+  static IDENTIFIER_RE = new RegExp(this.commonRE, "g");
+  static ONLY_IDENTIFIER_RE = new RegExp(`${this.commonRE}$`);
 
   static attributeTypeMap = new Map();
   static propertyToExpressionsMap = new Map();
