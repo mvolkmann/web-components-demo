@@ -3,17 +3,23 @@ import ZitElement from "./zit-element.js";
 
 class CounterZit extends ZitElement {
   static properties = {
-    // If react and render are both true, react is ignored.
-    count: { type: "number", react: true, reflect: true, render: false },
-    //count: { type: "number", react: false, reflect: true, render: true },
+    count: { type: "number", reflect: true },
   };
+
+  // Omit this construct to run in "render" mode
+  // where every property changes causes the component to re-render.
+  // Include this constructor to run in "react" mode
+  // where property changes trigger targeted text and attribute updates.
+  constructor() {
+    super(true);
+  }
 
   zero = 0;
   nothing() {
     return 0;
   }
 
-  static css() {
+  css() {
     return /*css*/ `
       :not(:defined) {
         visibility: hidden;
@@ -35,7 +41,7 @@ class CounterZit extends ZitElement {
     `;
   }
 
-  static html() {
+  html() {
     //TODO: Can an expression refer to global variables?
     //TODO: Can an expression call global functions?
     return /*html*/ `
@@ -47,6 +53,8 @@ class CounterZit extends ZitElement {
         -->
         <span>$count</span>
         <button onclick="increment">+</button>
+        <!-- This span is only evaluates once in react mode. -->
+        <span>${this.count >= 10 ? "double-digit" : ""}</span>
       </div>
     `;
   }

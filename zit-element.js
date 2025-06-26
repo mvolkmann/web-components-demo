@@ -24,8 +24,9 @@ class ZitElement extends HTMLElement {
   expressionReferencesMap = new Map();
   propertyReferencesMap = new Map();
 
-  constructor() {
+  constructor(reactive) {
     super();
+    this.reactive = reactive;
     this.attachShadow({ mode: "open" });
   }
 
@@ -134,6 +135,39 @@ class ZitElement extends HTMLElement {
     }
   }
 
+  react(element, propertyName, value) {
+    // Update all the references to this property.
+    const references = this.propertyReferencesMap.get(propertyName);
+    for (const reference of references) {
+      if (reference instanceof Element) {
+        element.textContent = value;
+      } else {
+        const { element, attrName } = reference;
+        // This is necessary for input, textarea, and select elements
+        // to trigger the browser to display the new value.
+        if (attrName === "value") element.value = value;
+        this.updateAttribute(element, attrName, value);
+      }
+    }
+
+    // Update all the elements whose text content
+    // is an expression that uses this property.
+    const expressions =
+      ZitElement.propertyToExpressionsMap.get(propertyName) || [];
+    for (const expression of expressions) {
+      const value = ZitElement.evaluateInContext(expression, this);
+      const references = this.expressionReferencesMap.get(expression);
+      for (const reference of references) {
+        if (reference instanceof Element) {
+          reference.textContent = value;
+        } else {
+          const { element, attrName } = reference;
+          this.updateAttribute(element, attrName, value);
+        }
+      }
+    }
+  }
+
   // Do not place untrusted expressions in
   // attribute values or the text content of elements!
   registerExpression(expression, element, attrName) {
@@ -197,38 +231,10 @@ class ZitElement extends HTMLElement {
             }
           }
 
-          if (options.render) {
+          if (this.reactive) {
+            this.react(element, propertyName, value);
+          } else {
             this.render(false);
-          } else if (options.react) {
-            // Update all the references to this property.
-            for (const reference of references) {
-              if (reference instanceof Element) {
-                element.textContent = value;
-              } else {
-                const { element, attrName } = reference;
-                // This is necessary for input, textarea, and select elements
-                // to trigger the browser to display the new value.
-                if (attrName === "value") element.value = value;
-                this.updateAttribute(element, attrName, value);
-              }
-            }
-
-            // Update all the elements whose text content
-            // is an expression that uses this property.
-            const expressions =
-              ZitElement.propertyToExpressionsMap.get(propertyName) || [];
-            for (const expression of expressions) {
-              const value = ZitElement.evaluateInContext(expression, this);
-              const references = this.expressionReferencesMap.get(expression);
-              for (const reference of references) {
-                if (reference instanceof Element) {
-                  reference.textContent = value;
-                } else {
-                  const { element, attrName } = reference;
-                  this.updateAttribute(element, attrName, value);
-                }
-              }
-            }
           }
         },
       });
@@ -256,10 +262,10 @@ class ZitElement extends HTMLElement {
   }
 
   render(firstCall) {
-    if (!ZitElement.template.innerHTML) {
+    if (!this.reactive || !ZitElement.template.innerHTML) {
       ZitElement.template.innerHTML = `
-      <style>${this.constructor.css()}</style>
-      ${this.constructor.html()}
+      <style>${this.css()}</style>
+      ${this.html()}
       `;
     }
 
