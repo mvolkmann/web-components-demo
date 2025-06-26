@@ -3,6 +3,7 @@ import ZitElement from "./zit-element.js";
 
 class CounterZit extends ZitElement {
   static properties = {
+    // If react and render are both true, react is ignored.
     count: { type: "number", react: true, reflect: true, render: false },
     //count: { type: "number", react: false, reflect: true, render: true },
   };
