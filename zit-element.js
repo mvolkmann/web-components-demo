@@ -115,7 +115,8 @@ class ZitElement extends HTMLElement {
   }
 
   getTypedValue(attrName, stringValue) {
-    const type = ZitElement.attributeTypeMap.get(attrName);
+    const options = ZitElement.attributeTypeMap.get(attrName);
+    const { type } = options;
     if (type === "number") return Number(stringValue);
     if (type === "boolean") return Boolean(stringValue);
     return stringValue;
@@ -208,9 +209,12 @@ class ZitElement extends HTMLElement {
 
           // If the property name matches an attribute on the custom element,
           // update that attribute.
-          if (this.hasAttribute(propertyName)) {
+          const options = ZitElement.attributeTypeMap.get(propertyName);
+          if (options.reflect && this.hasAttribute(propertyName)) {
             const oldValue = this.getTypedAttribute(propertyName);
-            if (value !== oldValue) this.setAttribute(propertyName, value);
+            if (value !== oldValue) {
+              this.updateAttribute(this, propertyName, value);
+            }
           }
 
           // Update all the references to this property.

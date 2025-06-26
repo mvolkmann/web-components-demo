@@ -2,7 +2,8 @@ import ZitElement from "./zit-element.js";
 //import ZitElement from "./zit-element.min.js";
 
 class CounterZit extends ZitElement {
-  static properties = { count: "number" };
+  //static properties = { count: { type: "number", reflect: true } };
+  static properties = { count: { type: "number" } };
 
   zero = 0;
   nothing() {
