@@ -11,7 +11,8 @@ class CounterZit extends ZitElement {
   // Include this constructor to run in "react" mode
   // where property changes trigger targeted text and attribute updates.
   constructor() {
-    super(true);
+    //super(true);
+    super();
   }
 
   zero = 0;
@@ -42,20 +43,14 @@ class CounterZit extends ZitElement {
   }
 
   html() {
-    //TODO: Can an expression refer to global variables?
-    //TODO: Can an expression call global functions?
     return /*html*/ `
-      <div>
-        <button disabled="$: this.count === 0" onclick="decrement">-</button>
-        <!--
-        <button disabled="$: this.count === this.zero" onclick="decrement">-</button>
-        <button disabled="$: this.count === this.nothing()" onclick="decrement">-</button>
-        -->
-        <span>$count</span>
-        <button onclick="increment">+</button>
-        <!-- This span is only evaluates once in react mode. -->
-        <span>${this.count >= 10 ? "double-digit" : ""}</span>
-      </div>
+    <div>
+      <!-- disabled needs to be set to "disabled" or removed! -->
+      <button disabled="@{this.count === 0}" onclick="decrement">-</button>
+      <span>@{this.count}</span>
+      <button onclick="increment">+</button>
+      <span>@{this.count >= 10 ? "double-digit" : "safe"}</span>
+    </div>
     `;
   }
 
