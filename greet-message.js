@@ -31,7 +31,7 @@ export class GreetMessage extends HTMLElement {
     this.render();
   }
 
-  attributeChangedCallback(name, oldValue, newValue) {
+  attributeChangedCallback(name) {
     if (name === "name") this.render();
   }
 

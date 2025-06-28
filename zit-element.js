@@ -109,6 +109,7 @@ class ZitElement extends HTMLElement {
     )(...Object.values(context));
     */
     return function () {
+      // oxlint-disable-next-line no-eval
       return eval(expression);
     }.call(context);
   }

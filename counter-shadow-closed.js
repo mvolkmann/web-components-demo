@@ -12,7 +12,7 @@ class CounterShadowClosed extends HTMLElement {
     this.root = this.attachShadow({ mode: "closed" });
   }
 
-  attributeChangedCallback(name, oldValue, newValue) {
+  attributeChangedCallback() {
     if (this.isConnected) this.update();
   }
 
@@ -38,7 +38,7 @@ class CounterShadowClosed extends HTMLElement {
   }
 
   set count(newCount) {
-    return this.setAttribute("count", newCount);
+    this.setAttribute("count", newCount);
   }
 
   decrement() {

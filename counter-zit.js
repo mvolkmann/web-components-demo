@@ -15,7 +15,6 @@ class CounterZit extends ZitElement {
     super();
   }
 
-  zero = 0;
   nothing() {
     return 0;
   }
@@ -60,10 +59,6 @@ class CounterZit extends ZitElement {
 
   increment() {
     this.count++;
-  }
-
-  zero() {
-    return 0;
   }
 }
 

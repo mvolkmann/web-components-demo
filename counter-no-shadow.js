@@ -10,7 +10,7 @@ class CounterNoShadow extends HTMLElement {
     CounterNoShadow.template = document.createElement("template");
   }
 
-  attributeChangedCallback(name, oldValue, newValue) {
+  attributeChangedCallback() {
     if (this.isConnected) this.update();
   }
 
@@ -64,7 +64,7 @@ class CounterNoShadow extends HTMLElement {
   }
 
   set count(newCount) {
-    return this.setAttribute("count", newCount);
+    this.setAttribute("count", newCount);
   }
 
   decrement() {

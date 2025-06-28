@@ -35,7 +35,7 @@ class CounterShadowOpen extends HTMLElement {
   }
 
   set count(newCount) {
-    return this.setAttribute("count", newCount);
+    this.setAttribute("count", newCount);
   }
 
   decrement() {
