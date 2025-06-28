@@ -6,7 +6,7 @@ class ZitElement extends HTMLElement {
   static #IDENTIFIER = `[${this.#FIRST_CHAR}][${this.#OTHER_CHAR}]*(?![${
     this.#OTHER_CHAR
   }\\(])`;
-  static #PLACEHOLDER_RE = /\@\{(.+)\}/;
+  static #PLACEHOLDER_RE = /@\{(.+)\}/;
   static #REFERENCE_RE = new RegExp(`(this\\.${this.#IDENTIFIER})`);
 
   static #attributeTypeMap = new Map();
