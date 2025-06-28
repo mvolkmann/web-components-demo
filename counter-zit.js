@@ -11,8 +11,8 @@ class CounterZit extends ZitElement {
   // Include this constructor to run in "react" mode
   // where property changes trigger targeted text and attribute updates.
   constructor() {
-    //super(true);
-    super();
+    super(true);
+    //super();
   }
 
   nothing() {
@@ -44,7 +44,6 @@ class CounterZit extends ZitElement {
   html() {
     return /*html*/ `
     <div>
-      <!-- disabled needs to be set to "disabled" or removed! -->
       <button disabled="@{this.count === 0}" onclick="decrement">-</button>
       <span>@{this.count}</span>
       <button onclick="increment">+</button>

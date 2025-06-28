@@ -185,17 +185,6 @@ class ZitElement extends HTMLElement {
         }
       }
     }
-
-    /*
-    console.log(
-      "#react: #propertyToExpressionsMap =",
-      ZitElement.#propertyToExpressionsMap
-    );
-    console.log(
-      "#react: #expressionReferencesMap =",
-      this.#expressionReferencesMap
-    );
-    */
   }
 
   #fixBooleanAttributes(element) {
@@ -251,6 +240,17 @@ class ZitElement extends HTMLElement {
         }
       });
     }
+
+    /*
+    console.log(
+      "#react: #propertyToExpressionsMap =",
+      ZitElement.#propertyToExpressionsMap
+    );
+    console.log(
+      "#react: #expressionReferencesMap =",
+      this.#expressionReferencesMap
+    );
+    */
   }
 
   #render() {
@@ -269,7 +269,7 @@ class ZitElement extends HTMLElement {
       ZitElement.#template.content.cloneNode(true)
     );
 
-    if (!this.reactive) {
+    if (!this.#reactive) {
       for (const child of this.shadowRoot.children) {
         this.#fixBooleanAttributes(child);
       }
