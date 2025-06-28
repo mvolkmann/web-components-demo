@@ -3,7 +3,7 @@ import ZitElement from "./zit-element.js";
 
 class CounterZit extends ZitElement {
   static properties = {
-    count: { type: "number", reflect: true },
+    count: { type: Number, reflect: true },
   };
 
   // Omit this construct to run in "render" mode

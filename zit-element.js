@@ -128,8 +128,8 @@ class ZitElement extends HTMLElement {
 
   #getTypedValue(attrName, stringValue) {
     const type = ZitElement.#attributeTypeMap.get(attrName);
-    if (type === "number") return Number(stringValue);
-    if (type === "boolean") return Boolean(stringValue);
+    if (type === Number) return Number(stringValue);
+    if (type === Boolean) return Boolean(stringValue);
     return stringValue;
   }
 
