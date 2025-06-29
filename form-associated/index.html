@@ -2,6 +2,7 @@
   <head>
     <script src="radio-group-shadow.js"></script>
     <script src="radio-group-no-shadow.js"></script>
+    <script src="radio-group-lit.ts" type="module"></script>
     <style>
       .row {
         display: flex;
@@ -30,6 +31,11 @@
         <label>Color 2:</label>
         <radio-group-no-shadow name="color2" options="red,green,blue">
         </radio-group-no-shadow>
+      </div>
+      <div class="row">
+        <label>Color 3:</label>
+        <radio-group-lit" name="color3" options="red,green,blue" default="blue">
+        </radio-group-lit>
       </div>
       <button>Submit</button>
       <button type="reset">Reset</button>

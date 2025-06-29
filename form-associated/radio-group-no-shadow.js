@@ -6,7 +6,7 @@ class RadioGroupNoShadow extends HTMLElement {
     this.#name = this.getAttribute("name");
     const options = this.getAttribute("options")
       .split(",")
-      .map((label) => label.trim());
+      .map((option) => option.trim());
     this.#defaultOption = this.getAttribute("default") || options[0];
 
     this.innerHTML = /*html*/ `
