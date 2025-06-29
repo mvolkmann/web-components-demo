@@ -1,6 +1,4 @@
 class RadioGroupNoShadow extends HTMLElement {
-  #defaultOption;
-
   constructor() {
     super();
   }
