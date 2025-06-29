@@ -4,6 +4,7 @@
 class RadioGroupNoShadow extends HTMLElement {
   #default;
   #name;
+  #value;
 
   connectedCallback() {
     this.#name = this.getAttribute("name");
@@ -11,6 +12,7 @@ class RadioGroupNoShadow extends HTMLElement {
       .split(",")
       .map((option) => option.trim());
     this.#default = this.getAttribute("default") || options[0];
+    this.#value = this.getAttribute("value") || this.#default;
 
     this.innerHTML = /*html*/ `
       <style>
@@ -42,7 +44,7 @@ class RadioGroupNoShadow extends HTMLElement {
           id="${option}"
           name="${this.#name}"
           value="${option}"
-          ${option === this.#default ? "checked" : ""}
+          ${option === this.#value ? "checked" : ""}
         />
         <label for="${option}">${option}</label>
       </div>
