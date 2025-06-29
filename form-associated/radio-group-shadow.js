@@ -15,11 +15,10 @@ class RadioGroupShadow extends HTMLElement {
     const options = this.getAttribute("options")
       .split(",")
       .map((label) => label.trim());
-    const defaultOption = this.getAttribute("default") || options[0];
-    this.#defaultOption = defaultOption;
-    this.#updateFormValue(defaultOption); // initial value
+    this.#defaultOption = this.getAttribute("default") || options[0];
+    this.#updateFormValue(this.#defaultOption); // initial value
 
-    this.shadowRoot.innerHTML = `
+    this.shadowRoot.innerHTML = /*html*/ `
       <style>
         :not(:defined) {
           visibility: hidden;
