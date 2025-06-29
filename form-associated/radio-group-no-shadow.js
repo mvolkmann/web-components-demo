@@ -2,7 +2,6 @@
 // makes it much easier to support using instances inside a form.
 // Compare this to radio-group-shadow.js and radio-group-lit.ts.
 class RadioGroupNoShadow extends HTMLElement {
-  #default;
   #name;
   #value;
 
@@ -11,8 +10,8 @@ class RadioGroupNoShadow extends HTMLElement {
     const options = this.getAttribute("options")
       .split(",")
       .map((option) => option.trim());
-    this.#default = this.getAttribute("default") || options[0];
-    this.#value = this.getAttribute("value") || this.#default;
+    this.#value =
+      this.getAttribute("value") || this.getAttribute("default") || options[0];
 
     this.innerHTML = /*html*/ `
       <style>
