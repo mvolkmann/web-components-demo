@@ -1,8 +1,7 @@
 <html>
   <head>
-    <script src="radio-group.js"></script>
+    <script src="radio-group-shadow.js"></script>
     <script src="radio-group-no-shadow.js"></script>
-    <script src="radio-group-no-shadow2.js"></script>
     <style>
       .row {
         display: flex;
@@ -16,26 +15,21 @@
     </style>
   </head>
   <body>
-    <form action="/foo">
+    <form action="/missing">
       <div class="row">
         <label for="name">Name:</label>
         <input id="name" name="name" required />
       </div>
       <div class="row">
-        <label>Color:</label>
-        <radio-group name="color" options="red,green,blue">
+        <label>Color 1:</label>
+        <radio-group-shadow name="color1" options="red,green,blue">
           <!-- default="blue" -->
-        </radio-group>
+        </radio-group-shadow>
       </div>
       <div class="row">
-        <label>Color2:</label>
+        <label>Color 2:</label>
         <radio-group-no-shadow name="color2" options="red,green,blue">
         </radio-group-no-shadow>
-      </div>
-      <div class="row">
-        <label>Color3:</label>
-        <radio-group-no-shadow2 name="color3" options="red,green,blue">
-        </radio-group-no-shadow2>
       </div>
       <button>Submit</button>
       <button type="reset">Reset</button>

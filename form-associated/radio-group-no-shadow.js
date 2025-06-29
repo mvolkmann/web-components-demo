@@ -1,40 +1,15 @@
 class RadioGroupNoShadow extends HTMLElement {
-  constructor() {
-    super();
-  }
+  #defaultOption;
+  #name;
 
   connectedCallback() {
-    const name = this.getAttribute("name");
+    this.#name = this.getAttribute("name");
     const options = this.getAttribute("options")
       .split(",")
       .map((label) => label.trim());
-    const defaultOption = this.getAttribute("default") || options[0];
+    this.#defaultOption = this.getAttribute("default") || options[0];
 
-    const parent = document.createElement("div");
-    parent.classList.add("radio-group");
-
-    for (const option of options) {
-      const div = document.createElement("div");
-
-      const input = document.createElement("input");
-      input.setAttribute("type", "radio");
-      input.setAttribute("id", option);
-      input.setAttribute("name", name);
-      input.setAttribute("value", option);
-      if (option === defaultOption) {
-        input.setAttribute("checked", "checked");
-      }
-      div.appendChild(input);
-
-      const label = document.createElement("label");
-      label.setAttribute("for", option);
-      label.textContent = option;
-      div.appendChild(label);
-
-      parent.appendChild(div);
-    }
-
-    this.innerHTML = `
+    this.innerHTML = /*html*/ `
       <style>
         :not(:defined) {
           visibility: hidden;
@@ -47,11 +22,28 @@ class RadioGroupNoShadow extends HTMLElement {
           > div {
             display: flex;
             align-items: center;
-          } 
+          }
         }
       </style>
+      <div class="radio-group">
+        ${options.map((option) => this.#makeRadio(option)).join("")}
+      </div>
     `;
-    this.appendChild(parent);
+  }
+
+  #makeRadio(option) {
+    return /*html*/ `
+      <div>
+        <input
+          type="radio"
+          id="${option}"
+          name="${this.#name}"
+          value="${option}"
+          ${option === this.#defaultOption ? "checked" : ""}
+        />
+        <label for="${option}">${option}</label>
+      </div>
+    `;
   }
 }
 

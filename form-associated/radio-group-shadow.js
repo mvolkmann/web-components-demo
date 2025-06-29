@@ -1,7 +1,8 @@
-class RadioGroup extends HTMLElement {
+class RadioGroupShadow extends HTMLElement {
   static formAssociated = true;
   #defaultOption;
   #internals;
+  #name;
 
   constructor() {
     super();
@@ -10,41 +11,12 @@ class RadioGroup extends HTMLElement {
   }
 
   connectedCallback() {
-    const name = this.getAttribute("name");
+    this.#name = this.getAttribute("name");
     const options = this.getAttribute("options")
       .split(",")
       .map((label) => label.trim());
     const defaultOption = this.getAttribute("default") || options[0];
     this.#defaultOption = defaultOption;
-
-    const parent = document.createElement("div");
-    parent.classList.add("radio-group");
-
-    for (const option of options) {
-      const div = document.createElement("div");
-
-      const input = document.createElement("input");
-      input.setAttribute("type", "radio");
-      input.setAttribute("id", option);
-      input.setAttribute("name", name);
-      input.setAttribute("value", option);
-      if (option === defaultOption) {
-        input.setAttribute("checked", "checked");
-      }
-      div.appendChild(input);
-
-      input.addEventListener("change", (event) => {
-        this.#updateFormValue(event.target.value);
-      });
-
-      const label = document.createElement("label");
-      label.setAttribute("for", option);
-      label.textContent = option;
-      div.appendChild(label);
-
-      parent.appendChild(div);
-    }
-
     this.#updateFormValue(defaultOption); // initial value
 
     this.shadowRoot.innerHTML = `
@@ -63,8 +35,17 @@ class RadioGroup extends HTMLElement {
           } 
         }
       </style>
+      <div class="radio-group">
+        ${options.map((option) => this.#makeRadio(option)).join("")}
+      </div>
     `;
-    this.shadowRoot.appendChild(parent);
+
+    const inputs = this.shadowRoot.querySelectorAll("input");
+    for (const input of inputs) {
+      input.addEventListener("change", (event) => {
+        this.#updateFormValue(event.target.value);
+      });
+    }
   }
 
   formResetCallback() {
@@ -74,10 +55,25 @@ class RadioGroup extends HTMLElement {
     }
   }
 
+  #makeRadio(option) {
+    return /*html*/ `
+      <div>
+        <input
+          type="radio"
+          id="${option}"
+          name="${this.#name}"
+          value="${option}"
+          ${option === this.#defaultOption ? "checked" : ""}
+        />
+        <label for="${option}">${option}</label>
+      </div>
+    `;
+  }
+
   #updateFormValue(value) {
     // Optionally validate the value.
     this.#internals.setFormValue(value);
   }
 }
 
-customElements.define("radio-group", RadioGroup);
+customElements.define("radio-group-shadow", RadioGroupShadow);
