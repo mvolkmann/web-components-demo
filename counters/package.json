@@ -1,9 +1,10 @@
 {
   "name": "web-components-demo",
+  "type": "module",
   "version": "1.0.0",
   "description": "This demonstrates several approaches to implementing web components.",
   "scripts": {
-    "dev": "http-server .",
+    "dev": "vite",
     "lint": "oxlint",
     "minify": "terser zit-element.js -c -m -o zit-element.min.js",
     "zip": "gzip -k zit-element.min.js"
@@ -14,9 +15,13 @@
   },
   "author": "R. Mark Volkmann",
   "license": "MIT",
+  "dependencies": {
+    "lit": "^3.0.0"
+  },
   "devDependencies": {
-    "http-server": "^14.1.1",
     "oxlint": "^1.3.0",
-    "terser": "^5.43.1"
+    "terser": "^5.43.1",
+    "typescript": "^5.0.0",
+    "vite": "^5.0.0"
   }
 }

@@ -3,6 +3,9 @@ import { customElement, property } from "lit/decorators.js";
 
 @customElement("radio-group-lit")
 export class RadioGroupLit extends LitElement {
+  static formAssociated = true;
+  _internals;
+
   static styles = css`
     :not(:defined) {
       visibility: hidden;
@@ -23,14 +26,13 @@ export class RadioGroupLit extends LitElement {
   @property({ type: String }) options = "";
   @property({ type: String }) default = "";
 
-  render() {
-    const options = this.options.split(",").map((label) => label.trim());
-    console.log("radio-group-lit.ts render: options =", options);
-    return html`
-      <div class="radio-group">
-        ${options.map((option) => this.#makeRadio(option)).join("")}
-      </div>
-    `;
+  constructor() {
+    super();
+    this._internals = this.attachInternals();
+  }
+
+  handleChange(event) {
+    this._internals.setFormValue(event.target.value);
   }
 
   #makeRadio(option) {
@@ -42,8 +44,19 @@ export class RadioGroupLit extends LitElement {
           name="${this.name}"
           value="${option}"
           ?checked=${option === this.default}
+          @change=${this.handleChange}
         />
         <label for="${option}">${option}</label>
+      </div>
+    `;
+  }
+
+  render() {
+    const options = this.options.split(",").map((label) => label.trim());
+    if (!this.default) this.default = options[0];
+    return html`
+      <div class="radio-group">
+        ${options.map((option) => this.#makeRadio(option))}
       </div>
     `;
   }
