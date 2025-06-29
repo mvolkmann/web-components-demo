@@ -1,15 +1,16 @@
 <html>
   <head>
     <script src="radio-group.js"></script>
+    <script src="radio-group-no-shadow.js"></script>
     <style>
-      label {
-        font-weight: bold;
-        margin-right: 0.5rem;
-      }
-
       .row {
         display: flex;
         margin-bottom: 0.5rem;
+
+        > label {
+          font-weight: bold;
+          margin-right: 0.5rem;
+        }
       }
     </style>
   </head>
@@ -24,6 +25,12 @@
         <radio-group name="color" options="red,green,blue">
           <!-- default="blue" -->
         </radio-group>
+      </div>
+      <div class="row">
+        <label>Color2:</label>
+        <radio-group-no-shadow name="color2" options="red,green,blue">
+          <!-- default="blue" -->
+        </radio-group-no-shadow>
       </div>
       <button>Submit</button>
       <button type="reset">Reset</button>
