@@ -20,11 +20,10 @@ class RadioGroup extends HTMLElement {
     const parent = document.createElement("div");
     parent.classList.add("radio-group");
 
-    let input;
     for (const option of options) {
       const div = document.createElement("div");
 
-      input = document.createElement("input");
+      const input = document.createElement("input");
       input.setAttribute("type", "radio");
       input.setAttribute("id", option);
       input.setAttribute("name", name);
@@ -34,7 +33,6 @@ class RadioGroup extends HTMLElement {
       }
       div.appendChild(input);
 
-      this.#updateFormValue(defaultOption); // initial value
       input.addEventListener("change", (event) => {
         this.#updateFormValue(event.target.value);
       });
@@ -46,6 +44,8 @@ class RadioGroup extends HTMLElement {
 
       parent.appendChild(div);
     }
+
+    this.#updateFormValue(defaultOption); // initial value
 
     this.shadowRoot.innerHTML = `
       <style>
@@ -64,7 +64,6 @@ class RadioGroup extends HTMLElement {
         }
       </style>
     `;
-
     this.shadowRoot.appendChild(parent);
   }
 
