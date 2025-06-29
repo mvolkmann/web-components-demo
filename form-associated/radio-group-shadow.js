@@ -1,8 +1,9 @@
 class RadioGroupShadow extends HTMLElement {
   static formAssociated = true;
-  #defaultOption;
+  #default;
   #internals;
   #name;
+  #value;
 
   constructor() {
     super();
@@ -15,8 +16,8 @@ class RadioGroupShadow extends HTMLElement {
     const options = this.getAttribute("options")
       .split(",")
       .map((option) => option.trim());
-    this.#defaultOption = this.getAttribute("default") || options[0];
-    this.#updateFormValue(this.#defaultOption); // initial value
+    this.#default = this.getAttribute("default") || options[0];
+    this.value = this.getAttribute("value") || this.#default;
 
     this.shadowRoot.innerHTML = /*html*/ `
       <style>
@@ -39,19 +40,33 @@ class RadioGroupShadow extends HTMLElement {
       </div>
     `;
 
+    // Add event listeners to the radio buttons.
     const inputs = this.shadowRoot.querySelectorAll("input");
     for (const input of inputs) {
       input.addEventListener("change", (event) => {
-        this.#updateFormValue(event.target.value);
+        this.value = event.target.value;
       });
     }
   }
 
   formResetCallback() {
-    this.#updateFormValue(this.#defaultOption);
+    this.value = this.#default;
     for (const input of this.shadowRoot.querySelectorAll("input")) {
-      input.checked = input.value === this.#defaultOption;
+      input.checked = input.value === this.value;
     }
+  }
+
+  get value() {
+    return this.#value;
+  }
+
+  set value(newValue) {
+    this.#value = newValue;
+    this.#internals.setFormValue(newValue);
+  }
+
+  handleChange(event) {
+    this.value = event.target.value;
   }
 
   #makeRadio(option) {
@@ -62,16 +77,11 @@ class RadioGroupShadow extends HTMLElement {
           id="${option}"
           name="${this.#name}"
           value="${option}"
-          ${option === this.#defaultOption ? "checked" : ""}
+          ${option === this.value ? "checked" : ""}
         />
         <label for="${option}">${option}</label>
       </div>
     `;
-  }
-
-  #updateFormValue(value) {
-    // Optionally validate the value.
-    this.#internals.setFormValue(value);
   }
 }
 
