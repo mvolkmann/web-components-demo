@@ -30,7 +30,6 @@ class ZitElement extends HTMLElement {
     super();
     this.#reactive = reactive;
     this.attachShadow({ mode: "open" });
-    this.#defineProperties();
   }
 
   attributeChangedCallback(attrName, _, newValue) {
@@ -39,6 +38,7 @@ class ZitElement extends HTMLElement {
   }
 
   connectedCallback() {
+    this.#defineProperties();
     this.#render();
     if (this.#reactive) this.#makeReactive();
   }

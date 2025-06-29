@@ -1,0 +1,32 @@
+<html>
+  <head>
+    <script src="radio-group.js"></script>
+    <style>
+      label {
+        font-weight: bold;
+        margin-right: 0.5rem;
+      }
+
+      .row {
+        display: flex;
+        margin-bottom: 0.5rem;
+      }
+    </style>
+  </head>
+  <body>
+    <form action="/foo">
+      <div class="row">
+        <label for="name">Name:</label>
+        <input id="name" name="name" required />
+      </div>
+      <div class="row">
+        <label>Color:</label>
+        <radio-group name="color" options="red,green,blue">
+          <!-- default="blue" -->
+        </radio-group>
+      </div>
+      <button>Submit</button>
+      <button type="reset">Reset</button>
+    </form>
+  </body>
+</html>
