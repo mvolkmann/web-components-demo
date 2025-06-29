@@ -1,5 +1,8 @@
+// This demonstrates that creating custom elements without a shadow DOM
+// makes it much easier to support using instances inside a form.
+// Compare this to radio-group-shadow.js and radio-group-lit.ts.
 class RadioGroupNoShadow extends HTMLElement {
-  #defaultOption;
+  #default;
   #name;
 
   connectedCallback() {
@@ -7,7 +10,7 @@ class RadioGroupNoShadow extends HTMLElement {
     const options = this.getAttribute("options")
       .split(",")
       .map((option) => option.trim());
-    this.#defaultOption = this.getAttribute("default") || options[0];
+    this.#default = this.getAttribute("default") || options[0];
 
     this.innerHTML = /*html*/ `
       <style>
@@ -17,7 +20,7 @@ class RadioGroupNoShadow extends HTMLElement {
 
         .radio-group {
           display: flex;
-          gap: 0.5rem;
+          gap: 0.25rem;
 
           > div {
             display: flex;
@@ -39,7 +42,7 @@ class RadioGroupNoShadow extends HTMLElement {
           id="${option}"
           name="${this.#name}"
           value="${option}"
-          ${option === this.#defaultOption ? "checked" : ""}
+          ${option === this.#default ? "checked" : ""}
         />
         <label for="${option}">${option}</label>
       </div>
