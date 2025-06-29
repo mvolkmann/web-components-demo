@@ -91,14 +91,10 @@ class ZitElement extends HTMLElement {
   }
 
   #evaluateAttributes(element) {
-    let shouldObserve = false;
-
     for (const attrName of element.getAttributeNames()) {
       const text = element.getAttribute(attrName);
       this.#registerPlaceholders(text, element, attrName);
     }
-
-    return shouldObserve;
   }
 
   static #evaluateInContext(expression, context) {
@@ -139,14 +135,16 @@ class ZitElement extends HTMLElement {
       // If the element has no child elements, evaluate its text content.
       if (!element.firstElementChild) this.#evaluateText(element);
 
-      const shouldObserve = this.#evaluateAttributes(element);
-      if (shouldObserve) this.#observeAttributes(element);
+      this.#evaluateAttributes(element);
+      //if (shouldObserve) this.#observeAttributes(element);
     }
   }
 
+  /*TODO: Do you still need this?
   // Listens for attribute value changes and
   // update the corresponding property if it exists.
   #observeAttributes(element) {
+    console.log("zit-element.js #observeAttributes: element =", element);
     const observer = new MutationObserver((mutations) => {
       for (const mutation of mutations) {
         if (mutation.type === "attributes") {
@@ -161,6 +159,7 @@ class ZitElement extends HTMLElement {
     });
     observer.observe(element, { attributes: true });
   }
+  */
 
   static register() {
     const elementName = ZitElement.#toKebabCase(this.name);
@@ -251,6 +250,8 @@ class ZitElement extends HTMLElement {
       this.#expressionReferencesMap
     );
     */
+
+    return Boolean(matches);
   }
 
   #render() {
