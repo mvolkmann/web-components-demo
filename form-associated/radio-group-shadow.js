@@ -50,19 +50,10 @@ class RadioGroupShadow extends HTMLElement {
   }
 
   formResetCallback() {
-    this.value = this.#default;
+    const value = (this.value = this.#default);
     for (const input of this.shadowRoot.querySelectorAll("input")) {
-      input.checked = input.value === this.value;
+      input.checked = input.value === value;
     }
-  }
-
-  get value() {
-    return this.#value;
-  }
-
-  set value(newValue) {
-    this.#value = newValue;
-    this.#internals.setFormValue(newValue);
   }
 
   handleChange(event) {
@@ -82,6 +73,15 @@ class RadioGroupShadow extends HTMLElement {
         <label for="${option}">${option}</label>
       </div>
     `;
+  }
+
+  get value() {
+    return this.#value;
+  }
+
+  set value(newValue) {
+    this.#value = newValue;
+    this.#internals.setFormValue(newValue);
   }
 }
 
