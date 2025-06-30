@@ -86,7 +86,7 @@ class RadioGroupShadow extends HTMLElement {
     // can contribute multiple values to a form.
     const data = new FormData();
     data.append(this.#name, newValue);
-    data.append("special", 19);
+    data.append("favoriteNumber", 19);
     this.#internals.setFormValue(data);
   }
 }
