@@ -14,6 +14,15 @@
         }
       }
     </style>
+    <script>
+      window.onload = () => {
+        const rg = document.querySelector("radio-group-shadow");
+        rg.addEventListener("change", (event) => {
+          const { value } = event.target;
+          console.log("index.html onChange: value =", value);
+        });
+      };
+    </script>
   </head>
   <body>
     <form action="/missing">

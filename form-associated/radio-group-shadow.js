@@ -82,6 +82,7 @@ class RadioGroupShadow extends HTMLElement {
   set value(newValue) {
     this.#value = newValue;
     this.#internals.setFormValue(newValue);
+    this.dispatchEvent(new Event("change"));
 
     // This demonstrates how a web component
     // can contribute multiple values to a form.
