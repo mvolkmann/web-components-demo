@@ -1,11 +1,14 @@
 class State {
   static instance = new State();
-  static {
-    this.instance = new State();
-  }
-
   #favoriteColor = "transparent";
   #propertyToListenersMap = new Map();
+
+  constructor() {
+    if (State.instance) {
+      throw new Error("get singleton instance with State.instance");
+    }
+    State.instance = this;
+  }
 
   addListener(property, callback) {
     let listeners = this.#propertyToListenersMap.get(property);
@@ -28,6 +31,7 @@ class State {
   }
 
   set favoriteColor(color) {
+    if (color === this.#favoriteColor) return;
     this.#favoriteColor = color;
     this.notifyListeners("favoriteColor");
   }

@@ -17,7 +17,7 @@ class RadioGroupShadow extends HTMLElement {
       .split(",")
       .map((option) => option.trim());
     this.#default = this.getAttribute("default") || options[0];
-    this.value = this.getAttribute("value") || this.#default;
+    this.#value = this.getAttribute("value") || this.#default;
 
     this.shadowRoot.innerHTML = /*html*/ `
       <style>
@@ -80,8 +80,12 @@ class RadioGroupShadow extends HTMLElement {
   }
 
   set value(newValue) {
+    if (newValue === this.#value) return;
+
     this.#value = newValue;
     this.#internals.setFormValue(newValue);
+    const input = this.shadowRoot.getElementById(newValue);
+    if (input) input.checked = true;
     this.dispatchEvent(new Event("change"));
 
     // This demonstrates how a web component

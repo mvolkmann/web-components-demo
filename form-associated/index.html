@@ -18,12 +18,21 @@
     <script>
       window.onload = () => {
         const state = State.instance;
-        const rg = document.querySelector("radio-group-shadow");
-        rg.addEventListener("change", (event) => {
-          state.favoriteColor = event.target.value;
-        });
+
+        // Add an event listener to each radio-group-shadow web component.
+        const rgs = document.querySelectorAll("radio-group-shadow");
+        for (const rg of rgs) {
+          rg.addEventListener("change", (event) => {
+            state.favoriteColor = event.target.value;
+          });
+        }
+
+        // When the favoriteColor state changes,
+        // update all the radio-group-shadow web components.
         state.addListener("favoriteColor", (color) => {
-          console.log("index.html got state change: color =", color);
+          for (const rg of rgs) {
+            rg.value = color;
+          }
         });
       };
     </script>
@@ -34,6 +43,7 @@
         <label for="name">Name:</label>
         <input id="name" name="name" required />
       </div>
+      <!--
       <div class="row">
         <label>Color:</label>
         <radio-group-no-shadow
@@ -45,19 +55,32 @@
         </radio-group-no-shadow>
         <div>(no shadow)</div>
       </div>
+      -->
       <div class="row">
-        <label>Color:</label>
-        <radio-group-shadow name="color2" options="red,green,blue">
-          <!-- default="blue" value="green" -->
+        <label>Color 1:</label>
+        <radio-group-shadow name="color1" options="red,green,blue">
         </radio-group-shadow>
         <div>(shadow)</div>
       </div>
+      <div class="row">
+        <label>Color 2:</label>
+        <radio-group-shadow
+          name="color2"
+          options="red,green,blue"
+          value="green"
+        >
+        </radio-group-shadow>
+        <!-- default="blue" value="green" -->
+        <div>(shadow)</div>
+      </div>
+      <!--
       <div class="row">
         <label>Color:</label>
         <radio-group-lit name="color3" options="red,green,blue">
         </radio-group-lit>
         <div>(Lit)</div>
       </div>
+      -->
       <button>Submit</button>
       <button type="reset">Reset</button>
     </form>
