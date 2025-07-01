@@ -19,8 +19,9 @@
       window.onload = () => {
         const state = State.instance;
 
-        // Add an event listener to each radio-group-shadow web component.
         const rgs = document.querySelectorAll("radio-group-shadow");
+
+        // Add an event listener to each radio-group-shadow web component.
         for (const rg of rgs) {
           rg.addEventListener("change", (event) => {
             state.favoriteColor = event.target.value;
@@ -29,7 +30,7 @@
 
         // When the favoriteColor state changes,
         // update all the radio-group-shadow web components.
-        state.addListener("favoriteColor", (color) => {
+        state.addCallback("favoriteColor", (color) => {
           for (const rg of rgs) {
             rg.value = color;
           }

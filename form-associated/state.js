@@ -1,7 +1,7 @@
 class State {
   static instance = new State();
   #favoriteColor = "transparent";
-  #propertyToListenersMap = new Map();
+  #propertyToCallbacksMap = new Map();
 
   constructor() {
     if (State.instance) {
@@ -10,17 +10,17 @@ class State {
     State.instance = this;
   }
 
-  addListener(property, callback) {
-    let listeners = this.#propertyToListenersMap.get(property);
-    if (!listeners) {
-      listeners = [];
-      this.#propertyToListenersMap.set(property, listeners);
+  addCallback(property, callback) {
+    let callbacks = this.#propertyToCallbacksMap.get(property);
+    if (!callbacks) {
+      callbacks = [];
+      this.#propertyToCallbacksMap.set(property, callbacks);
     }
-    listeners.push(callback);
+    callbacks.push(callback);
   }
 
-  notifyListeners(property) {
-    let callbacks = this.#propertyToListenersMap.get(property) || [];
+  changed(property) {
+    let callbacks = this.#propertyToCallbacksMap.get(property) || [];
     for (const callback of callbacks) {
       callback(this[property]);
     }
@@ -33,7 +33,7 @@ class State {
   set favoriteColor(color) {
     if (color === this.#favoriteColor) return;
     this.#favoriteColor = color;
-    this.notifyListeners("favoriteColor");
+    this.changed("favoriteColor");
   }
 }
 
