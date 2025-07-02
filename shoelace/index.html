@@ -1,0 +1,51 @@
+<html>
+  <head>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.20.1/cdn/themes/light.css"
+    />
+    <style>
+      sl-radio-group {
+        margin-top: 1rem;
+      }
+
+      sl-radio-group::part(form-control),
+      sl-radio-group::part(form-control-input) {
+        display: flex;
+        gap: 1rem;
+      }
+
+      sl-radio-group::part(form-control-label) {
+        font-family: var(--sl-input-font-family);
+        font-weight: bold;
+      }
+    </style>
+    <script
+      type="module"
+      src="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.20.1/cdn/shoelace-autoloader.js"
+    ></script>
+    <script>
+      window.onload = () => {
+        const slSwitch = document.querySelector("sl-switch");
+        slSwitch.addEventListener("sl-change", (event) => {
+          console.log("switch is", event.target.checked ? "on" : "off");
+        });
+
+        const slRadioGroup = document.querySelector("sl-radio-group");
+        slRadioGroup.addEventListener("sl-change", (event) => {
+          console.log("color =", event.target.value);
+        });
+      };
+    </script>
+  </head>
+  <body>
+    <div>
+      <sl-switch>Happy?</sl-switch>
+    </div>
+    <sl-radio-group label="Color:" value="red">
+      <sl-radio value="red">Red</sl-radio>
+      <sl-radio value="green">Green</sl-radio>
+      <sl-radio value="blue">Blue</sl-radio>
+    </sl-radio-group>
+  </body>
+</html>

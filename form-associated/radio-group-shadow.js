@@ -56,10 +56,6 @@ class RadioGroupShadow extends HTMLElement {
     }
   }
 
-  handleChange(event) {
-    this.value = event.target.value;
-  }
-
   #makeRadio(option) {
     return /*html*/ `
       <div>
