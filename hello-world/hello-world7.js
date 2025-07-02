@@ -1,11 +1,10 @@
-class HelloWorld7 extends HTMLElement {
-  static template = document.createElement("template");
-  static {
-    this.template.innerHTML = /*html*/ `
-      <p>Hello, <span id="name"></span>!</p>
-    `;
-  }
+// When script tag uses type="module", this variable is scoped to the module.
+const template = document.createElement("template");
+template.innerHTML = /*html*/ `
+  <p>Hello, <span id="name"></span>!</p>
+`;
 
+class HelloWorld7 extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: "open" });
@@ -13,7 +12,7 @@ class HelloWorld7 extends HTMLElement {
 
   connectedCallback() {
     const { shadowRoot } = this;
-    shadowRoot.appendChild(HelloWorld7.template.content.cloneNode(true));
+    shadowRoot.appendChild(template.content.cloneNode(true));
     const span = shadowRoot.querySelector("#name");
     span.textContent = this.getAttribute("name") || "World";
   }

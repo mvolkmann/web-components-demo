@@ -9,9 +9,9 @@ class HelloWorld1 extends HTMLElement {
   }
 
   attributeChangedCallback(name, oldValue, newValue) {
-    if (this.isConnected && name === "name") {
+    if (name === "name") {
       const p = this.querySelector("p");
-      p.textContent = `Hello, ${newValue}!`;
+      if (p) p.textContent = `Hello, ${newValue}!`;
     }
   }
 }
